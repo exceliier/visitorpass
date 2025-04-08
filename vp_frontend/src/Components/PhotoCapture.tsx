@@ -57,8 +57,53 @@ const PhotoCapture: React.FC = () => {
     localStorage.setItem('visitorPhoto', photoData);
     console.log('Photo saved to localStorage:', photoData);
 
-    history.push('/barcode'); // Navigate to BarcodeGenerator
+    // Retrieve form data from localStorage
+    const visitorData = {
+      name: localStorage.getItem('visitorName'),
+      mobile: localStorage.getItem('visitorMobile'),
+      address: localStorage.getItem('visitorAddress'),
+      purpose: localStorage.getItem('visitorPurpose'),
+      toVisit: localStorage.getItem('visitorToVisit'),
+      photo: photoData,
+    };
+
+    // Ensure all required fields are present
+    if (
+      !visitorData.name ||
+      !visitorData.mobile ||
+      !visitorData.address ||
+      !visitorData.purpose ||
+      !visitorData.toVisit
+    ) {
+      alert('Visitor data is incomplete. Please fill out all fields.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/visitors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer your_jwt_secret`, // Replace with actual token
+        },
+        body: JSON.stringify(visitorData),
+      });
+
+      if (response.ok) {
+        const { visitorID } = await response.json();
+        localStorage.setItem('visitorID', visitorID); // Save visitorID for barcode generation
+        console.log('Visitor ID saved:', visitorID);
+        history.push('/barcode'); // Navigate to BarcodeGenerator
+      } else {
+        alert('Failed to save visitor data.');
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+      alert('An error occurred while saving the photo.');
+    }
   };
+
+  
 
   const handleAbort = () => {
     setPhoto(null);
