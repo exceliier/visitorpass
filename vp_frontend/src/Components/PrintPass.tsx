@@ -11,6 +11,7 @@ const PrintPass: React.FC = () => {
   const [visitorToVisit, setVisitorToVisit] = useState<string | null>(null);
   const [visitorPhoto, setVisitorPhoto] = useState<string | null>(null);
   const [visitorId, setvisitorId] = useState<string | null>(null);
+  const [currentDateTime, setCurrentDateTime] = useState<string>(''); // State for current datetime
   const history = useHistory();
 
   useEffect(() => {
@@ -21,6 +22,15 @@ const PrintPass: React.FC = () => {
     setVisitorToVisit(localStorage.getItem('visitorToVisit'));
     setVisitorPhoto(localStorage.getItem('visitorPhoto'));
     setvisitorId(localStorage.getItem('visitorID')); // Retrieve visitorID for barcode
+
+    // Generate and set the current datetime in dd/MMM/yyyy format
+    const now = new Date();
+    const formattedDate = new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(now);
+    setCurrentDateTime(formattedDate);
   }, []);
 
   const handlePrint = () => {
@@ -73,6 +83,7 @@ const PrintPass: React.FC = () => {
         <Typography variant="body1">Address: {visitorAddress}</Typography>
         <Typography variant="body1">Purpose: {visitorPurpose}</Typography>
         <Typography variant="body1">To Visit: {visitorToVisit}</Typography>
+        <Typography variant="body1">Entry Time: {currentDateTime}</Typography> {/* Display current datetime */}
         <Box
           sx={{
             display: 'flex',
