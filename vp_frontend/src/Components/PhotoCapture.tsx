@@ -353,7 +353,7 @@ const PhotoCapture: React.FC = () => {
               <Button onClick={capturePhoto} variant="contained" color="secondary" sx={{ mr: 2 }}>
                 Capture Photo
               </Button>
-              <Button onClick={closeCamera} variant="outlined" color="secondary">
+              <Button onClick={handleAbort} variant="outlined" color="secondary">
                 Cancel
               </Button>
             </Box>
