@@ -23,7 +23,7 @@ const App: React.FC = () => {
             Visitor Pass Management
           </Typography>
           <Switch>
-            <Route exact path="/" component={DataForm} />
+            <Route exact path="/" component={DataForm} />            
             <Route path="/photo" component={PhotoCapture} />
             <Route path="/barcode" component={BarcodeGenerator} />
             <Route path="/print" component={PrintPass} />

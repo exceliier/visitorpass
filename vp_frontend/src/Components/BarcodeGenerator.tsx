@@ -23,6 +23,14 @@ const BarcodeGenerator: React.FC = () => {
           <img
             src={visitorPhoto}
             alt="Visitor"
+            style={{
+              borderRadius: '8px',
+              width: '80%',
+              maxWidth: '320px',
+              height: 'auto',
+              objectFit: 'contain',
+            }}
+            
           />
         )}
         <Typography variant="body1">Name: {visitorName}</Typography>

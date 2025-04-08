@@ -8,6 +8,13 @@ const DataForm: React.FC = () => {
   const [address, setAddress] = useState('');
   const [purpose, setPurpose] = useState('');
   const [toVisit, setToVisit] = useState('');
+  const [errors, setErrors] = useState({
+    name: '',
+    mobile: '',
+    address: '',
+    purpose: '',
+    toVisit: '',
+  });
   const history = useHistory();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,6 +62,22 @@ const DataForm: React.FC = () => {
   };
 
   const handlePhoto = () => {
+    const newErrors = {
+      name: name.length < 10 ? 'Name must be at least 10 characters long.' : '',
+      mobile: !/^\d{10}$/.test(mobile) ? 'Mobile number must be exactly 10 digits.' : '',
+      address: address.length < 10 ? 'Address must be at least 10 characters long.' : '',
+      purpose: purpose.length < 10 ? 'Purpose must be at least 10 characters long.' : '',
+      toVisit: toVisit.length < 10 ? 'To Whom to Visit must be at least 10 characters long.' : '',
+    };
+
+    setErrors(newErrors);
+
+    // If there are any errors, stop execution
+    if (Object.values(newErrors).some((error) => error !== '')) {
+      alert('Please fix the errors before proceeding to photo capture.');
+      return;
+    }
+
     // Save form data to localStorage
     localStorage.setItem('visitorName', name);
     localStorage.setItem('visitorMobile', mobile);
@@ -89,6 +112,8 @@ const DataForm: React.FC = () => {
               fullWidth
               margin="normal"
               required
+              error={!!errors.name}
+              helperText={errors.name}
             />
             <TextField
               label="Mobile Number"
@@ -97,6 +122,8 @@ const DataForm: React.FC = () => {
               fullWidth
               margin="normal"
               required
+              error={!!errors.mobile}
+              helperText={errors.mobile}
             />
             <TextField
               label="Address"
@@ -105,6 +132,8 @@ const DataForm: React.FC = () => {
               fullWidth
               margin="normal"
               required
+              error={!!errors.address}
+              helperText={errors.address}
             />
             <TextField
               label="Purpose of Visit"
@@ -113,6 +142,8 @@ const DataForm: React.FC = () => {
               fullWidth
               margin="normal"
               required
+              error={!!errors.purpose}
+              helperText={errors.purpose}
             />
             <TextField
               label="To Whom to Visit"
@@ -121,6 +152,8 @@ const DataForm: React.FC = () => {
               fullWidth
               margin="normal"
               required
+              error={!!errors.toVisit}
+              helperText={errors.toVisit}
             />
             <Button
               type="button"

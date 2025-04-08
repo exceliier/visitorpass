@@ -51,11 +51,12 @@ const PhotoCapture: React.FC = () => {
 
     context.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
     const photoData = canvas.toDataURL('image/png');
-    console.log('Captured photo data:', photoData);
+    
 
     setPhoto(photoData);
+    closeCamera(); // Stop the camera after capturing the photo
     localStorage.setItem('visitorPhoto', photoData);
-    console.log('Photo saved to localStorage:', photoData);
+    
 
     // Retrieve form data from localStorage
     const visitorData = {
@@ -76,6 +77,7 @@ const PhotoCapture: React.FC = () => {
       !visitorData.toVisit
     ) {
       alert('Visitor data is incomplete. Please fill out all fields.');
+      history.push('/dataform'); // Navigate back to the form
       return;
     }
 
@@ -91,8 +93,7 @@ const PhotoCapture: React.FC = () => {
 
       if (response.ok) {
         const { visitorID } = await response.json();
-        localStorage.setItem('visitorID', visitorID); // Save visitorID for barcode generation
-        console.log('Visitor ID saved:', visitorID);
+        localStorage.setItem('visitorID', visitorID); // Save visitorID for barcode generation        
         history.push('/barcode'); // Navigate to BarcodeGenerator
       } else {
         alert('Failed to save visitor data.');
@@ -100,18 +101,34 @@ const PhotoCapture: React.FC = () => {
     } catch (error) {
       console.error('Error during API call:', error);
       alert('An error occurred while saving the photo.');
+    }finally {
+      closeCamera(); // Stop the camera after capturing the photo
     }
   };
 
-  
+  const closeCamera = () => {
+    console.log('closeCamera method called');
+    if (videoRef.current) {
+      console.log('videoRef.current:', videoRef.current);
+      console.log('videoRef.current.srcObject:', videoRef.current.srcObject);
+    }
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach((track) => {
+        console.log(`Stopping track: ${track.kind}`);
+        track.stop();
+      });
+      videoRef.current.srcObject = null; // Release the camera
+      console.log('Camera stopped and released.');
+    } else {
+      console.log('No active camera stream to stop.');
+    }
+  };
 
   const handleAbort = () => {
     setPhoto(null);
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach((track) => track.stop());
-      videoRef.current.srcObject = null;
-    }
+    closeCamera(); // Stop the camera if it's running
+    history.push('/'); // Navigate back to the home route
   };
 
   useEffect(() => {
@@ -135,7 +152,7 @@ const PhotoCapture: React.FC = () => {
             alt="Captured"
             style={{
               borderRadius: '8px',
-              width: '100%',
+              width: '80%',
               maxWidth: '320px',
               height: 'auto',
               objectFit: 'contain',
@@ -148,7 +165,7 @@ const PhotoCapture: React.FC = () => {
               autoPlay
               style={{
                 borderRadius: '8px',
-                width: '100%',
+                width: '80%',
                 maxWidth: '320px',
                 height: 'auto',
                 objectFit: 'cover',
