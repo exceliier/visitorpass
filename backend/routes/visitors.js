@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 // Save visitor data
 router.post('/', verifyToken, async (req, res) => {
   try {
-    const { name, mobile, address, purpose, toVisit, photo } = req.body;
+    const { name, mobile, adhhaar, toVisit, photo } = req.body;
 
     // Generate a unique visitor ID
     const visitorID = uuidv4();
@@ -16,8 +16,8 @@ router.post('/', verifyToken, async (req, res) => {
     const visitor = new Visitor({
       name,
       mobile,
+      adhhaar
       address,
-      purpose,
       toVisit,
       photo,
       barcode: visitorID,

@@ -4,6 +4,8 @@ import PhotoCapture from './components/PhotoCapture';
 import DataForm from './components/DataForm';
 import BarcodeGenerator from './components/BarcodeGenerator';
 import PrintPass from './components/PrintPass';
+import Login from './components/Login';
+import PrivateRoute from './components/PrivateRoute';
 import { Container, Typography, Box } from '@mui/material';
 
 const App: React.FC = () => {
@@ -23,10 +25,11 @@ const App: React.FC = () => {
             Visitor Pass Management
           </Typography>
           <Switch>
-            <Route exact path="/" component={DataForm} />            
-            <Route path="/photo" component={PhotoCapture} />
-            <Route path="/barcode" component={BarcodeGenerator} />
-            <Route path="/print" component={PrintPass} />
+            <Route path="/login" component={Login} />
+            <PrivateRoute exact path="/" component={DataForm} />
+            <PrivateRoute path="/photo" component={PhotoCapture} />
+            <PrivateRoute path="/barcode" component={BarcodeGenerator} />
+            <PrivateRoute path="/print" component={PrintPass} />
           </Switch>
         </Container>
       </Box>

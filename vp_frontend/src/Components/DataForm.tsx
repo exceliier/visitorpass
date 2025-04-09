@@ -5,14 +5,12 @@ import { useHistory } from 'react-router-dom';
 const DataForm: React.FC = () => {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
-  const [address, setAddress] = useState('');
-  const [purpose, setPurpose] = useState('');
+  const [adhhaar, setAdhhaar] = useState('');  
   const [toVisit, setToVisit] = useState('');
   const [errors, setErrors] = useState({
     name: '',
     mobile: '',
-    address: '',
-    purpose: '',
+    adhhaar: '',    
     toVisit: '',
   });
   const history = useHistory();
@@ -23,18 +21,18 @@ const DataForm: React.FC = () => {
     const visitorData = {
       name,
       mobile,
-      address,
-      purpose,
+      adhhaar,      
       toVisit,
       photo: localStorage.getItem('visitorPhoto'), // Retrieve photo from localStorage
     };
 
     try {
+      const authToken = localStorage.getItem('authToken'); // Retrieve authToken from localStorage
       const response = await fetch('http://localhost:5000/visitors', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer YOUR_TOKEN_HERE', // Replace with actual token
+          Authorization: `Bearer ${authToken}`, // Use the retrieved token
         },
         body: JSON.stringify(visitorData),
       });
@@ -63,11 +61,10 @@ const DataForm: React.FC = () => {
 
   const handlePhoto = () => {
     const newErrors = {
-      name: name.length < 10 ? 'Name must be at least 10 characters long.' : '',
+      name: name.length < 5 ? 'Name must be at least 5 characters long.' : '',
       mobile: !/^\d{10}$/.test(mobile) ? 'Mobile number must be exactly 10 digits.' : '',
-      address: address.length < 10 ? 'Address must be at least 10 characters long.' : '',
-      purpose: purpose.length < 10 ? 'Purpose must be at least 10 characters long.' : '',
-      toVisit: toVisit.length < 10 ? 'To Whom to Visit must be at least 10 characters long.' : '',
+      adhhaar: !/^\d{12}$/.test(mobile) ? 'adhhaar must be at least 12 characters long.' : '',      
+      toVisit: toVisit.length < 5 ? 'To Whom to Visit must be at least 5 characters long.' : '',
     };
 
     setErrors(newErrors);
@@ -81,8 +78,7 @@ const DataForm: React.FC = () => {
     // Save form data to localStorage
     localStorage.setItem('visitorName', name);
     localStorage.setItem('visitorMobile', mobile);
-    localStorage.setItem('visitorAddress', address);
-    localStorage.setItem('visitorPurpose', purpose);
+    localStorage.setItem('visitorAdhhaar', adhhaar);    
     localStorage.setItem('visitorToVisit', toVisit);
 
     // Navigate to the PhotoCapture page
@@ -126,25 +122,16 @@ const DataForm: React.FC = () => {
               helperText={errors.mobile}
             />
             <TextField
-              label="Address"
-              value={address}
+              label="Adhhaar Number"
+              value={adhhaar}
               onChange={(e) => setAddress(e.target.value)}
               fullWidth
               margin="normal"
               required
-              error={!!errors.address}
-              helperText={errors.address}
+              error={!!errors.adhhaar}
+              helperText={errors.adhhaar}
             />
-            <TextField
-              label="Purpose of Visit"
-              value={purpose}
-              onChange={(e) => setPurpose(e.target.value)}
-              fullWidth
-              margin="normal"
-              required
-              error={!!errors.purpose}
-              helperText={errors.purpose}
-            />
+            
             <TextField
               label="To Whom to Visit"
               value={toVisit}
