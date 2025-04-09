@@ -70,8 +70,8 @@ const PrintPass: React.FC = () => {
             src={visitorPhoto}
             alt="Visitor"
             style={{
-              width: '100px',
-              height: '100px',
+              width: 'auto',
+              height: '100px', // Set a fixed height for the image
               borderRadius: '8px',
               marginBottom: '1rem',
               objectFit: 'contain', // Ensures the entire image is visible within the box
