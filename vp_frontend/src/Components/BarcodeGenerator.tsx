@@ -9,8 +9,7 @@ const BarcodeGenerator: React.FC = () => {
   const visitorPhoto = localStorage.getItem('visitorPhoto');
   const visitorName = localStorage.getItem('visitorName');
   const visitorMobile = localStorage.getItem('visitorMobile');
-  const visitorAddress = localStorage.getItem('visitorAddress');
-  const visitorPurpose = localStorage.getItem('visitorPurpose');
+  const visitorAdhaar = localStorage.getItem('visitorAdhaar');  
   const visitorToVisit = localStorage.getItem('visitorToVisit');
 
   return (
@@ -35,8 +34,7 @@ const BarcodeGenerator: React.FC = () => {
         )}
         <Typography variant="body1">Name: {visitorName}</Typography>
         <Typography variant="body1">Mobile: {visitorMobile}</Typography>
-        <Typography variant="body1">Address: {visitorAddress}</Typography>
-        <Typography variant="body1">Purpose: {visitorPurpose}</Typography>
+        <Typography variant="body1">Adhaar Number: {visitorAdhaar}</Typography>        
         <Typography variant="body1">To Visit: {visitorToVisit}</Typography>
         <Barcode value={visitorId || ''} width={1} height={50} />
         <Box sx={{ mt: 2 }}>

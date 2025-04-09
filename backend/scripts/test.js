@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 const plainPassword = 'password123';
 const hashedPasswordFromDB =
-  '$2b$10$SUwMlcVqJQi5bl.Ybz7JZ.ncdran9jOu1TZDGQRMPzBNirvfG7X6q';
+  '$2b$10$yvaz1E206l3gvA5/UPxTxeB3fCybapbRYqwy8xSJoeLClK7oUXqPG';
 
 // Generate a new hash for the same plain password
 const newHashedPassword = bcrypt.hashSync(plainPassword, 10);

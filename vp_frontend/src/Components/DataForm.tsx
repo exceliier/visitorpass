@@ -5,12 +5,12 @@ import { useHistory } from 'react-router-dom';
 const DataForm: React.FC = () => {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
-  const [adhhaar, setAdhhaar] = useState('');  
+  const [adhaar, setAdhaar] = useState('');  
   const [toVisit, setToVisit] = useState('');
   const [errors, setErrors] = useState({
     name: '',
     mobile: '',
-    adhhaar: '',    
+    adhaar: '',    
     toVisit: '',
   });
   const history = useHistory();
@@ -21,7 +21,7 @@ const DataForm: React.FC = () => {
     const visitorData = {
       name,
       mobile,
-      adhhaar,      
+      adhaar,      
       toVisit,
       photo: localStorage.getItem('visitorPhoto'), // Retrieve photo from localStorage
     };
@@ -54,8 +54,7 @@ const DataForm: React.FC = () => {
     // Clear all fields and reset the form
     setName('');
     setMobile('');
-    setAddress('');
-    setPurpose('');
+    setAdhaar('');    
     setToVisit('');
   };
 
@@ -63,7 +62,7 @@ const DataForm: React.FC = () => {
     const newErrors = {
       name: name.length < 5 ? 'Name must be at least 5 characters long.' : '',
       mobile: !/^\d{10}$/.test(mobile) ? 'Mobile number must be exactly 10 digits.' : '',
-      adhhaar: !/^\d{12}$/.test(mobile) ? 'adhhaar must be at least 12 characters long.' : '',      
+      adhaar: !/^\d{12}$/.test(adhaar) ? 'adhaar must be at least 12 characters long.' : '',      
       toVisit: toVisit.length < 5 ? 'To Whom to Visit must be at least 5 characters long.' : '',
     };
 
@@ -72,13 +71,14 @@ const DataForm: React.FC = () => {
     // If there are any errors, stop execution
     if (Object.values(newErrors).some((error) => error !== '')) {
       alert('Please fix the errors before proceeding to photo capture.');
+      console.log('Errors:', newErrors);
       return;
     }
 
     // Save form data to localStorage
     localStorage.setItem('visitorName', name);
     localStorage.setItem('visitorMobile', mobile);
-    localStorage.setItem('visitorAdhhaar', adhhaar);    
+    localStorage.setItem('visitorAdhaar', adhaar);    
     localStorage.setItem('visitorToVisit', toVisit);
 
     // Navigate to the PhotoCapture page
@@ -123,13 +123,13 @@ const DataForm: React.FC = () => {
             />
             <TextField
               label="Adhhaar Number"
-              value={adhhaar}
-              onChange={(e) => setAddress(e.target.value)}
+              value={adhaar}
+              onChange={(e) => setAdhaar(e.target.value)}
               fullWidth
               margin="normal"
               required
-              error={!!errors.adhhaar}
-              helperText={errors.adhhaar}
+              error={!!errors.adhaar}
+              helperText={errors.adhaar}
             />
             
             <TextField

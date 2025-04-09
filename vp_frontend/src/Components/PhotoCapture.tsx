@@ -206,8 +206,7 @@ const PhotoCapture: React.FC = () => {
     const visitorData = {
       name: localStorage.getItem('visitorName'),
       mobile: localStorage.getItem('visitorMobile'),
-      address: localStorage.getItem('visitorAddress'),
-      purpose: localStorage.getItem('visitorPurpose'),
+      adhaar: localStorage.getItem('visitorAdhaar'),      
       toVisit: localStorage.getItem('visitorToVisit'),
       photo: photoData,
     };

@@ -6,8 +6,7 @@ import { useHistory } from 'react-router-dom';
 const PrintPass: React.FC = () => {
   const [visitorName, setVisitorName] = useState<string | null>(null);
   const [visitorMobile, setVisitorMobile] = useState<string | null>(null);
-  const [visitorAddress, setVisitorAddress] = useState<string | null>(null);
-  const [visitorPurpose, setVisitorPurpose] = useState<string | null>(null);
+  const [visitorAdhaar, setVisitorAdhaar] = useState<string | null>(null);
   const [visitorToVisit, setVisitorToVisit] = useState<string | null>(null);
   const [visitorPhoto, setVisitorPhoto] = useState<string | null>(null);
   const [visitorId, setvisitorId] = useState<string | null>(null);
@@ -17,8 +16,7 @@ const PrintPass: React.FC = () => {
   useEffect(() => {
     setVisitorName(localStorage.getItem('visitorName'));
     setVisitorMobile(localStorage.getItem('visitorMobile'));
-    setVisitorAddress(localStorage.getItem('visitorAddress'));
-    setVisitorPurpose(localStorage.getItem('visitorPurpose'));
+    setVisitorAdhaar(localStorage.getItem('visitorAdhaar'));    
     setVisitorToVisit(localStorage.getItem('visitorToVisit'));
     setVisitorPhoto(localStorage.getItem('visitorPhoto'));
     setvisitorId(localStorage.getItem('visitorID')); // Retrieve visitorID for barcode
@@ -29,6 +27,8 @@ const PrintPass: React.FC = () => {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',      
     }).format(now);
     setCurrentDateTime(formattedDate);
   }, []);
@@ -37,8 +37,7 @@ const PrintPass: React.FC = () => {
     window.print();
   };
 
-  const handleNew = () => {
-    localStorage.clear(); // Clear all data from localStorage
+  const handleNew = () => {    
     history.push('/'); // Navigate back to the DataForm page
   };
 
@@ -63,7 +62,7 @@ const PrintPass: React.FC = () => {
           style={{ width: '80px', marginBottom: '1rem' }}
         />
         <Typography variant="h5" gutterBottom>
-          Visitor Pass
+          Sinchan Bhavan - Visitor Pass
         </Typography>
         {visitorPhoto && (
           <img
@@ -78,10 +77,9 @@ const PrintPass: React.FC = () => {
             }}
           />
         )}
-        <Typography variant="body1">Name: {visitorName}</Typography>
+        <Typography variant="h6">Name: {visitorName}</Typography>
         <Typography variant="body1">Mobile: {visitorMobile}</Typography>
-        <Typography variant="body1">Address: {visitorAddress}</Typography>
-        <Typography variant="body1">Purpose: {visitorPurpose}</Typography>
+        <Typography variant="body1">Adhaar Number: {visitorAdhaar}</Typography>        
         <Typography variant="body1">To Visit: {visitorToVisit}</Typography>
         <Typography variant="body1">Entry Time: {currentDateTime}</Typography> {/* Display current datetime */}
         <Box
