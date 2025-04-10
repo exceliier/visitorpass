@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, TextField, Typography, Container, Box, IconButton, Checkbox, FormControlLabel } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useHistory } from 'react-router-dom';
+import axiosInstance from '../axiosInstance'; // Import the centralized Axios instance
 /**
  * The `DataForm` component is a React functional component that provides a form for entering and managing visitor data.
  * It includes fields for name, mobile number, Adhaar/PAN, and the person to visit, along with functionality for photo handling.
@@ -59,8 +60,6 @@ const DataForm: React.FC = () => {
     adhaar: '',
     toVisit: '',
   });
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [visitorData, setVisitorData] = useState<any>(null); // Store visitor data
   const history = useHistory();
 
   // Reset form to initial state
@@ -82,14 +81,12 @@ const DataForm: React.FC = () => {
 
   const fetchVisitorData = async (key: 'mobile' | 'adhaar', value: string) => {
     try {
-      const authToken = sessionStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:5000/visitors/search?${key}=${value}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+      const response = await axiosInstance.get(`/visitors/search`, {
+        params: { [key]: value }, // Pass query parameters
       });
-      if (response.ok) {
-        const data = await response.json();
+
+      if (response.status === 200) {
+        const data = response.data;
 
         // Populate form fields with the searched data
         setName(data.name || '');
@@ -159,18 +156,10 @@ const DataForm: React.FC = () => {
     if (useOldPhoto) {
       // Save visitor data to the database only if moving to the barcode page
       try {
-        const authToken = sessionStorage.getItem('authToken');
-        const response = await fetch('http://localhost:5000/visitors', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify(visitorData),
-        });
+        const response = await axiosInstance.post('/visitors', visitorData);
 
-        if (response.ok) {
-          const { visitorID } = await response.json();
+        if (response.status === 201) {
+          const { visitorID } = response.data;
           visitorData.barcode = visitorID; // Update the barcode in visitorData
           sessionStorage.setItem('visitorData', JSON.stringify(visitorData)); // Save updated visitorData
 

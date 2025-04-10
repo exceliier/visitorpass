@@ -80,12 +80,13 @@ button:focus-visible {
     position: absolute; /* Align to the top-left corner */
     top: 0;
     left: 0;
-    width: 105mm; /* Exact A6 width */
-    height: 148mm; /* Exact A6 height */
+    width: 96mm; /* Exact A6 width */
+    height: 140mm; /* Exact A6 height */
     padding: 0; /* Remove padding to avoid shifting */
     background-color: #ffffff;    
     box-sizing: border-box; /* Include padding and border in dimensions */
     overflow: hidden; /* Prevent content overflow */
+    margin: 15px;
   }
 
   /* Ensure images fit within the container */
@@ -106,9 +107,9 @@ button:focus-visible {
 
   /* Set the paper size and orientation */
   @page {
-    position: absolute;
+    position: relative;
     size: 105mm 148mm; /* Custom dimensions for A6 */
-    margin: 5mm; /* Remove all margins */
+    margin: 10mm; 
     orientation: portrait; /* Set orientation to portrait */
   }
 }

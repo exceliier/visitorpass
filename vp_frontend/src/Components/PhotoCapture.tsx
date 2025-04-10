@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button, Typography, Box, Container } from '@mui/material';
 import { useHistory } from 'react-router-dom';
+import axiosInstance from '../axiosInstance'; // Import axiosInstance
 
 /**
  * PhotoCapture Component
@@ -330,19 +331,12 @@ const PhotoCapture: React.FC = () => {
       sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
     }
   
-    const accessToken = sessionStorage.getItem('authToken');
     try {
-      const response = await fetch('http://localhost:5000/visitors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(visitorData), // Send the updated visitorData object
-      });
+      // Use axiosInstance to make the API call
+      const response = await axiosInstance.post('/visitors', visitorData);
   
-      if (response.ok) {
-        const { visitorID } = await response.json();
+      if (response.status === 201) {
+        const { visitorID } = response.data;
         visitorData.barcode = visitorID; // Update the barcode in visitorData
         sessionStorage.setItem('visitorData', JSON.stringify(visitorData)); // Save updated visitorData
         history.push('/barcode'); // Navigate to BarcodeGenerator
