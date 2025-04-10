@@ -7,6 +7,15 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const history = useHistory();
 
+  /**
+   * Handles the login process by sending a POST request to the authentication endpoint.
+   * If the login is successful, the authentication token is stored in session storage,
+   * and the user is redirected to the home page. If the login fails, an alert is displayed.
+   * 
+   * @async
+   * @function handleLogin
+   * @throws Will alert the user if an error occurs during the login process or if the credentials are invalid.
+   */
   const handleLogin = async () => {
     try {
       const response = await fetch('http://localhost:5000/auth/login', {

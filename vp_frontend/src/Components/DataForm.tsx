@@ -2,6 +2,50 @@ import React, { useState } from 'react';
 import { Button, TextField, Typography, Container, Box, IconButton, Checkbox, FormControlLabel } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useHistory } from 'react-router-dom';
+/**
+ * The `DataForm` component is a React functional component that provides a form for entering and managing visitor data.
+ * It includes fields for name, mobile number, Adhaar/PAN, and the person to visit, along with functionality for photo handling.
+ * 
+ * ## Features:
+ * - **Form Fields**: Allows users to input visitor details such as name, mobile number, Adhaar/PAN, and the person to visit.
+ * - **Search Functionality**: Enables searching for existing visitor data by mobile number or Adhaar/PAN.
+ * - **Photo Handling**: Supports using an existing photo or capturing a new one.
+ * - **Validation**: Validates input fields for correctness (e.g., mobile number format, Adhaar/PAN format).
+ * - **Session Management**: Stores and retrieves visitor data in `sessionStorage`.
+ * - **API Integration**: Communicates with a backend API to fetch and save visitor data.
+ * - **Navigation**: Redirects to the photo capture or barcode page based on user actions.
+ * - **Reset Functionality**: Resets the form to its initial state.
+
+ * ## State Variables:
+ * - `name`: Stores the visitor's name.
+ * - `mobile`: Stores the visitor's mobile number.
+ * - `adhaar`: Stores the visitor's Adhaar or PAN number.
+ * - `toVisit`: Stores the name of the person to visit.
+ * - `photo`: Stores the visitor's photo (if available).
+ * - `useOldPhoto`: Boolean indicating whether to use an existing photo.
+ * - `errors`: Object containing validation error messages for form fields.
+ * - `showConfirmation`: Boolean to control the display of a confirmation dialog.
+ * - `visitorData`: Stores the visitor data object for session management.
+ * 
+ * ## Methods:
+ * - `resetForm`: Resets all form fields and clears session storage.
+ * - `fetchVisitorData`: Fetches visitor data from the backend API based on mobile number or Adhaar/PAN.
+ * - `handleSearch`: Validates input and triggers the search for visitor data.
+ * - `isValidAdhaarOrPAN`: Validates the format of Adhaar or PAN numbers.
+ * - `handlePhotoOrBarcode`: Validates form fields, saves visitor data, and navigates to the appropriate page (photo or barcode).
+ * 
+ * ## Props:
+ * This component does not accept any props.
+ * 
+ * ## Dependencies:
+ * - `useHistory`: For navigation between pages.
+ * - `sessionStorage`: For temporary storage of visitor data.
+ * - `fetch`: For API calls to the backend.
+ * - `Material-UI`: For UI components such as `Box`, `Container`, `TextField`, `Button`, etc.
+ * 
+ * ## Usage:
+ * Render the `DataForm` component to allow users to input and manage visitor data in a visitor management system.
+ */
 const DataForm: React.FC = () => {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');

@@ -2,6 +2,53 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Button, Typography, Box, Container } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 
+/**
+ * PhotoCapture Component
+ *
+ * This React functional component provides a user interface for capturing, clipping, 
+ * and saving a photo using the device's camera. It includes features such as 
+ * starting/stopping the camera, capturing a photo, clipping a specific area of the 
+ * captured photo, and submitting the photo data to an API.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The rendered PhotoCapture component.
+ *
+ * @remarks
+ * - The component uses the `useRef` hook to reference the video and canvas elements.
+ * - The `useState` hook is used to manage the state of the photo, clipping area, 
+ *   and other UI-related states.
+ * - The `useEffect` hook is used for cleanup and updating the canvas when the 
+ *   clipping area or photo changes.
+ *
+ * @features
+ * - Start and stop the camera using the `startCamera` and `closeCamera` functions.
+ * - Capture a photo from the video stream using the `capturePhoto` function.
+ * - Draw and move a clipping rectangle on the canvas to select a specific area of the photo.
+ * - Clip the selected area of the photo using the `clipCapturedImage` function.
+ * - Save the photo and submit it to an API using the `saveAndCallApi` function.
+ * - Handle abort actions to reset the state and navigate back to the home route.
+ *
+ * @dependencies
+ * - React and React hooks (`useState`, `useRef`, `useEffect`).
+ * - Material-UI components (`Container`, `Typography`, `Box`, `Button`).
+ * - Browser APIs (`navigator.mediaDevices.getUserMedia`, `sessionStorage`).
+ *
+ * @example
+ * ```tsx
+ * import PhotoCapture from './PhotoCapture';
+ *
+ * const App = () => {
+ *   return (
+ *     <div>
+ *       <PhotoCapture />
+ *     </div>
+ *   );
+ * };
+ *
+ * export default App;
+ * ```
+ */
 const PhotoCapture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -55,6 +102,7 @@ const PhotoCapture: React.FC = () => {
 
     context.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
     const photoData = canvas.toDataURL('image/png');
+    closeCamera(); // Stop the camera after capturing the photo
 
     setPhoto(photoData); // Display the captured image
     setIsCameraStarted(false); // Disable camera-related actions
@@ -148,6 +196,7 @@ const PhotoCapture: React.FC = () => {
 
   // Clip the captured image
   const clipCapturedImage = () => {
+    closeCamera(); // Stop the camera before clipping
     if (!photo) {
       console.error('No photo available to clip.');
       return;
@@ -223,6 +272,7 @@ const PhotoCapture: React.FC = () => {
   // Save data and call the API
   const saveAndCallApi = async () => {
     // Retrieve the visitorData JSON object from sessionStorage
+    closeCamera(); // Stop the camera before saving
     const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
 
     if (!visitorData.photo) {
@@ -266,11 +316,21 @@ const PhotoCapture: React.FC = () => {
 
   // Handle abort action
   const handleAbort = () => {
-    setPhoto(null);
-    sessionStorage.removeItem('visitorData'); // Clear visitor data from sessionStorage
-    closeCamera();
-    history.push('/'); // Navigate back to the home route
+    if (isClippingEnabled) {
+      // If clipping is done, reset the state and restart the camera
+      setPhoto(null);
+      setIsClippingEnabled(false); // Reset clipping state
+      setIsPhotoCaptured(false); // Reset photo captured state
+      startCamera(); // Restart the camera
+    } else {
+      // For other steps, navigate back to the home route
+      setPhoto(null);
+      sessionStorage.removeItem('visitorData'); // Clear visitor data from sessionStorage
+      closeCamera();
+      history.push('/'); // Navigate back to the home route
+    }
   };
+
   // Cleanup on component unmount
   useEffect(() => {
     drawRectangle(); // Draw the rectangle whenever the clipping area changes

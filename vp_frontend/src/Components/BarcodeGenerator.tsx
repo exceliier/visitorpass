@@ -3,6 +3,40 @@ import Barcode from 'react-barcode';
 import { Button, Typography, Box, Container } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 
+/**
+ * BarcodeGenerator Component
+ *
+ * This React functional component generates a visitor pass with a barcode
+ * and displays visitor details retrieved from the `sessionStorage`.
+ *
+ * @component
+ * @returns {JSX.Element} A styled container displaying visitor details, a barcode,
+ * and a button to navigate to the print page.
+ *
+ * @remarks
+ * - The visitor data is expected to be stored in `sessionStorage` under the key `visitorData`.
+ * - If the `visitorData` object is not found or is invalid, default empty values are used.
+ * - The barcode is generated using the `Barcode` component.
+ *
+ * @dependencies
+ * - `useHistory` from `react-router-dom` for navigation.
+ * - `Container`, `Box`, `Typography`, and `Button` from Material-UI for layout and styling.
+ * - `Barcode` for rendering the barcode.
+ *
+ * @example
+ * // Example visitorData stored in sessionStorage:
+ * sessionStorage.setItem('visitorData', JSON.stringify({
+ *   photo: 'https://example.com/photo.jpg',
+ *   name: 'John Doe',
+ *   mobile: '1234567890',
+ *   adhaar: '1234-5678-9012',
+ *   toVisit: 'Reception',
+ *   barcode: '123456789012'
+ * }));
+ *
+ * // Render the component
+ * <BarcodeGenerator />
+ */
 const BarcodeGenerator: React.FC = () => {
   const history = useHistory();
 

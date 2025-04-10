@@ -3,6 +3,42 @@ import { Button, Typography, Box, Container } from '@mui/material';
 import Barcode from 'react-barcode';
 import { useHistory } from 'react-router-dom';
 
+/**
+ * `PrintPass` is a React functional component that renders a printable visitor pass.
+ * It retrieves visitor data from `sessionStorage`, formats the current date and time,
+ * and displays the visitor's details along with a barcode. The component also provides
+ * options to print the pass or navigate back to the data entry form.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} A styled container displaying visitor details and actions.
+ *
+ * @remarks
+ * - The visitor data is expected to be stored in `sessionStorage` under the key `visitorData`.
+ * - The current date and time are formatted using the `Intl.DateTimeFormat` API.
+ * - The barcode is generated using the `Barcode` component.
+ *
+ * @example
+ * ```tsx
+ * // Example usage:
+ * <PrintPass />
+ * ```
+ *
+ * @dependencies
+ * - `useState` and `useEffect` from React for state management and side effects.
+ * - `useHistory` from `react-router-dom` for navigation.
+ * - `Container`, `Box`, `Typography`, and `Button` from Material-UI for styling.
+ * - `Barcode` for rendering the barcode.
+ *
+ * @styles
+ * - The pass is styled to match A6 dimensions (100mm x 140mm).
+ * - The visitor's photo is displayed with a fixed height and rounded corners.
+ * - The barcode is styled with adjustable width and height.
+ *
+ * @actions
+ * - `handlePrint`: Triggers the browser's print functionality.
+ * - `handleNew`: Navigates back to the data entry form.
+ */
 const PrintPass: React.FC = () => {
   const [visitorData, setVisitorData] = useState<any>(null); // Store visitor data
   const [currentDateTime, setCurrentDateTime] = useState<string>(''); // State for current datetime
