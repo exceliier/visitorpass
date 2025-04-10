@@ -146,55 +146,83 @@ const PhotoCapture: React.FC = () => {
   // Allow the user to move the rectangle
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-
+    if (!canvas || !photo) return;
+  
     const rect = canvas.getBoundingClientRect();
     const startX = 'touches' in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
     const startY = 'touches' in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
-
-    // Add a margin around the rectangle to make it easier to grab
-    const margin = 0;
-
-    // Check if the touch/mouse is inside the rectangle (with margin)
-    if (
-      startX >= clippingArea.clipX - margin &&
-      startX <= clippingArea.clipX + clippingArea.clipWidth + margin &&
-      startY >= clippingArea.clipY - margin &&
-      startY <= clippingArea.clipY + clippingArea.clipHeight + margin
-    ) {
-      const offsetX = startX - clippingArea.clipX;
-      const offsetY = startY - clippingArea.clipY;
-
-      const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
-        const currentX =
-          'touches' in moveEvent
-            ? moveEvent.touches[0].clientX - rect.left
-            : (moveEvent as MouseEvent).clientX - rect.left;
-        const currentY =
-          'touches' in moveEvent
-            ? moveEvent.touches[0].clientY - rect.top
-            : (moveEvent as MouseEvent).clientY - rect.top;
-
-        // Update the rectangle's position, ensuring it stays within the canvas boundaries
-        setClippingArea((prev) => ({
-          ...prev,
-          clipX: Math.max(0, Math.min(canvas.width - prev.clipWidth, currentX - offsetX)),
-          clipY: Math.max(0, Math.min(canvas.height - prev.clipHeight, currentY - offsetY)),
-        }));
-      };
-
-      const handleEnd = () => {
-        document.removeEventListener('mousemove', handleMove);
-        document.removeEventListener('mouseup', handleEnd);
-        document.removeEventListener('touchmove', handleMove);
-        document.removeEventListener('touchend', handleEnd);
-      };
-
-      document.addEventListener('mousemove', handleMove);
-      document.addEventListener('mouseup', handleEnd);
-      document.addEventListener('touchmove', handleMove);
-      document.addEventListener('touchend', handleEnd);
-    }
+  
+    const img = new Image();
+    img.src = photo;
+  
+    img.onload = () => {
+      // Calculate the rendered dimensions of the image
+      const canvasAspectRatio = canvas.width / canvas.height;
+      const imageAspectRatio = img.width / img.height;
+  
+      let renderedWidth, renderedHeight, offsetX, offsetY;
+  
+      if (canvasAspectRatio > imageAspectRatio) {
+        // Image is constrained by height
+        renderedHeight = canvas.height;
+        renderedWidth = img.width * (canvas.height / img.height);
+        offsetX = (canvas.width - renderedWidth) / 2;
+        offsetY = 0;
+      } else {
+        // Image is constrained by width
+        renderedWidth = canvas.width;
+        renderedHeight = img.height * (canvas.width / img.width);
+        offsetX = 0;
+        offsetY = (canvas.height - renderedHeight) / 2;
+      }
+  
+      // Check if the touch/mouse is inside the rectangle
+      if (
+        startX >= clippingArea.clipX &&
+        startX <= clippingArea.clipX + clippingArea.clipWidth &&
+        startY >= clippingArea.clipY &&
+        startY <= clippingArea.clipY + clippingArea.clipHeight
+      ) {
+        const offsetXFromClip = startX - clippingArea.clipX;
+        const offsetYFromClip = startY - clippingArea.clipY;
+  
+        const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+          const currentX =
+            'touches' in moveEvent
+              ? moveEvent.touches[0].clientX - rect.left
+              : (moveEvent as MouseEvent).clientX - rect.left;
+          const currentY =
+            'touches' in moveEvent
+              ? moveEvent.touches[0].clientY - rect.top
+              : (moveEvent as MouseEvent).clientY - rect.top;
+  
+          // Constrain the rectangle to the image's rendered bounds
+          setClippingArea((prev) => ({
+            ...prev,
+            clipX: Math.max(
+              offsetX,
+              Math.min(offsetX + renderedWidth - prev.clipWidth, currentX - offsetXFromClip)
+            ),
+            clipY: Math.max(
+              offsetY,
+              Math.min(offsetY + renderedHeight - prev.clipHeight, currentY - offsetYFromClip)
+            ),
+          }));
+        };
+  
+        const handleEnd = () => {
+          document.removeEventListener('mousemove', handleMove);
+          document.removeEventListener('mouseup', handleEnd);
+          document.removeEventListener('touchmove', handleMove);
+          document.removeEventListener('touchend', handleEnd);
+        };
+  
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('touchmove', handleMove);
+        document.addEventListener('touchend', handleEnd);
+      }
+    };
   };
 
   // Clip the captured image
@@ -284,16 +312,21 @@ const PhotoCapture: React.FC = () => {
   };
 
   // Save data and call the API
-  const saveAndCallApi = async () => {
-    // Retrieve the visitorData JSON object from sessionStorage
+  const saveAndCallApi = async (isClipped = true) => {
     closeCamera(); // Stop the camera before saving
     const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
-
+  
     if (!visitorData.photo) {
       alert('No photo available to save.');
       return;
     }
-
+  
+    if (!isClipped) {
+      // Save the unmodified photo
+      visitorData.photo = photo;
+      sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
+    }
+  
     const accessToken = sessionStorage.getItem('authToken');
     try {
       const response = await fetch('http://localhost:5000/visitors', {
@@ -304,7 +337,7 @@ const PhotoCapture: React.FC = () => {
         },
         body: JSON.stringify(visitorData), // Send the updated visitorData object
       });
-
+  
       if (response.ok) {
         const { visitorID } = await response.json();
         visitorData.barcode = visitorID; // Update the barcode in visitorData
@@ -350,6 +383,11 @@ const PhotoCapture: React.FC = () => {
 
   // Cleanup on component unmount
   useEffect(() => {
+    return () => {
+      startCamera(); 
+    };
+  }, []);
+  useEffect(() => {
     drawRectangle(); // Draw the rectangle whenever the clipping area changes
   }, [clippingArea]);
 
@@ -390,8 +428,7 @@ const PhotoCapture: React.FC = () => {
               alt="Captured"
               style={{
                 borderRadius: '8px',
-                width: '80%',
-                maxWidth: '320px',
+                width: '100%',                
                 height: 'auto',
                 objectFit: 'contain',
               }}
@@ -403,7 +440,7 @@ const PhotoCapture: React.FC = () => {
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: '100%',
+                height: 'auto',
                 pointerEvents: 'auto',
               }}
               onMouseDown={handleMouseDown}
@@ -418,6 +455,15 @@ const PhotoCapture: React.FC = () => {
                 disabled={isClippingEnabled} // Disable if clipping is already done
               >
                 Clip Image
+              </Button>
+              <Button
+                onClick={() => saveAndCallApi(false)} // Save without clipping
+                variant="contained"
+                color="secondary"
+                sx={{ mr: 2 }}
+                disabled={!photo} // Enable only if a photo is available
+              >
+                Save Without Clipping
               </Button>
               <Button
                 onClick={saveAndCallApi}
@@ -440,8 +486,7 @@ const PhotoCapture: React.FC = () => {
               autoPlay
               style={{
                 borderRadius: '8px',
-                width: '80%',
-                maxWidth: '320px',
+                width: '100%',                
                 height: 'auto',
                 objectFit: 'cover',
               }}
