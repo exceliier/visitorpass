@@ -4,22 +4,14 @@ import Barcode from 'react-barcode';
 import { useHistory } from 'react-router-dom';
 
 const PrintPass: React.FC = () => {
-  const [visitorName, setVisitorName] = useState<string | null>(null);
-  const [visitorMobile, setVisitorMobile] = useState<string | null>(null);
-  const [visitorAdhaar, setVisitorAdhaar] = useState<string | null>(null);
-  const [visitorToVisit, setVisitorToVisit] = useState<string | null>(null);
-  const [visitorPhoto, setVisitorPhoto] = useState<string | null>(null);
-  const [visitorId, setvisitorId] = useState<string | null>(null);
+  const [visitorData, setVisitorData] = useState<any>(null); // Store visitor data
   const [currentDateTime, setCurrentDateTime] = useState<string>(''); // State for current datetime
   const history = useHistory();
 
   useEffect(() => {
-    setVisitorName(localStorage.getItem('visitorName'));
-    setVisitorMobile(localStorage.getItem('visitorMobile'));
-    setVisitorAdhaar(localStorage.getItem('visitorAdhaar'));    
-    setVisitorToVisit(localStorage.getItem('visitorToVisit'));
-    setVisitorPhoto(localStorage.getItem('visitorPhoto'));
-    setvisitorId(localStorage.getItem('visitorID')); // Retrieve visitorID for barcode
+    // Retrieve the visitorData JSON object from sessionStorage
+    const data = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
+    setVisitorData(data);
 
     // Generate and set the current datetime in dd/MMM/yyyy format
     const now = new Date();
@@ -28,7 +20,7 @@ const PrintPass: React.FC = () => {
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit',      
+      minute: '2-digit',
     }).format(now);
     setCurrentDateTime(formattedDate);
   }, []);
@@ -37,7 +29,7 @@ const PrintPass: React.FC = () => {
     window.print();
   };
 
-  const handleNew = () => {    
+  const handleNew = () => {
     history.push('/'); // Navigate back to the DataForm page
   };
 
@@ -64,9 +56,9 @@ const PrintPass: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           Sinchan Bhavan - Visitor Pass
         </Typography>
-        {visitorPhoto && (
+        {visitorData?.photo && (
           <img
-            src={visitorPhoto}
+            src={visitorData.photo}
             alt="Visitor"
             style={{
               width: 'auto',
@@ -77,10 +69,10 @@ const PrintPass: React.FC = () => {
             }}
           />
         )}
-        <Typography variant="h6">Name: {visitorName}</Typography>
-        <Typography variant="body1">Mobile: {visitorMobile}</Typography>
-        <Typography variant="body1">Adhaar Number: {visitorAdhaar}</Typography>        
-        <Typography variant="body1">To Visit: {visitorToVisit}</Typography>
+        <Typography variant="h6">Name: {visitorData?.name}</Typography>
+        <Typography variant="body1">Mobile: {visitorData?.mobile}</Typography>
+        <Typography variant="body1">Adhaar Number: {visitorData?.adhaar}</Typography>
+        <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
         <Typography variant="body1">Entry Time: {currentDateTime}</Typography> {/* Display current datetime */}
         <Box
           sx={{
@@ -91,7 +83,7 @@ const PrintPass: React.FC = () => {
           }}
         >
           <Barcode
-            value={visitorId || ''}
+            value={visitorData?.barcode || ''}
             width={1} // Adjust barcode width
             height={40} // Adjust barcode height
             margin={0} // Remove extra margins

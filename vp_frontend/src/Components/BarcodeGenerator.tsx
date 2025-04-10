@@ -5,12 +5,9 @@ import { useHistory } from 'react-router-dom';
 
 const BarcodeGenerator: React.FC = () => {
   const history = useHistory();
-  const visitorId = localStorage.getItem('visitorID');
-  const visitorPhoto = localStorage.getItem('visitorPhoto');
-  const visitorName = localStorage.getItem('visitorName');
-  const visitorMobile = localStorage.getItem('visitorMobile');
-  const visitorAdhaar = localStorage.getItem('visitorAdhaar');  
-  const visitorToVisit = localStorage.getItem('visitorToVisit');
+
+  // Retrieve the visitorData JSON object from sessionStorage
+  const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
 
   return (
     <Container maxWidth="sm">
@@ -18,9 +15,9 @@ const BarcodeGenerator: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           Visitor Barcode
         </Typography>
-        {visitorPhoto && (
+        {visitorData?.photo && (
           <img
-            src={visitorPhoto}
+            src={visitorData.photo}
             alt="Visitor"
             style={{
               borderRadius: '8px',
@@ -29,14 +26,13 @@ const BarcodeGenerator: React.FC = () => {
               height: 'auto',
               objectFit: 'contain',
             }}
-            
           />
         )}
-        <Typography variant="body1">Name: {visitorName}</Typography>
-        <Typography variant="body1">Mobile: {visitorMobile}</Typography>
-        <Typography variant="body1">Adhaar Number: {visitorAdhaar}</Typography>        
-        <Typography variant="body1">To Visit: {visitorToVisit}</Typography>
-        <Barcode value={visitorId || ''} width={1} height={50} />
+        <Typography variant="body1">Name: {visitorData?.name}</Typography>
+        <Typography variant="body1">Mobile: {visitorData?.mobile}</Typography>
+        <Typography variant="body1">Adhaar Number: {visitorData?.adhaar}</Typography>
+        <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
+        <Barcode value={visitorData?.barcode || ''} width={1} height={50} />
         <Box sx={{ mt: 2 }}>
           <Button onClick={() => history.push('/print')} variant="contained" color="primary">
             Print Pass

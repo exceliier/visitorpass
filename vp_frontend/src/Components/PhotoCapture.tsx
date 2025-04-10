@@ -12,6 +12,9 @@ const PhotoCapture: React.FC = () => {
     clipWidth: 300, // Increased width
     clipHeight: 300, // Increased height
   });
+  const [isCameraStarted, setIsCameraStarted] = useState(false); // Track if the camera is started
+  const [isPhotoCaptured, setIsPhotoCaptured] = useState(false); // Track if the photo is captured
+  const [isClippingEnabled, setIsClippingEnabled] = useState(false); // Track if clipping is enabled
   const history = useHistory();
 
   // Start the camera
@@ -20,6 +23,9 @@ const PhotoCapture: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        setIsCameraStarted(true); // Camera is now started
+        setIsPhotoCaptured(false); // Reset photo captured state
+        setIsClippingEnabled(false); // Reset clipping state
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -51,8 +57,17 @@ const PhotoCapture: React.FC = () => {
     const photoData = canvas.toDataURL('image/png');
 
     setPhoto(photoData); // Display the captured image
-    closeCamera(); // Stop the camera
-    localStorage.setItem('visitorPhoto', photoData);
+    setIsCameraStarted(false); // Disable camera-related actions
+    setIsPhotoCaptured(true); // Enable photo-related actions
+
+    // Retrieve the visitorData JSON object from sessionStorage
+    const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
+
+    // Update the photo field in visitorData
+    visitorData.photo = photoData;
+
+    // Save the updated visitorData object back to sessionStorage
+    sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
   };
 
   // Draw the fixed-size rectangle on the canvas
@@ -137,7 +152,9 @@ const PhotoCapture: React.FC = () => {
       console.error('No photo available to clip.');
       return;
     }
-  
+
+    setIsClippingEnabled(true); // Enable clipping state
+
     const image = new Image();
     image.src = photo;
   
@@ -181,7 +198,15 @@ const PhotoCapture: React.FC = () => {
       console.log('Clipped photo data:', clippedPhotoData);
   
       setPhoto(clippedPhotoData); // Update the photo with the clipped image
-      localStorage.setItem('visitorPhoto', clippedPhotoData); // Save the clipped photo to localStorage
+  
+      // Retrieve the visitorData JSON object from sessionStorage
+      const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
+  
+      // Update the photo field in visitorData
+      visitorData.photo = clippedPhotoData;
+  
+      // Save the updated visitorData object back to sessionStorage
+      sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
   
       // Clear the rectangle from the overlay canvas
       const overlayCanvas = canvasRef.current;
@@ -197,33 +222,29 @@ const PhotoCapture: React.FC = () => {
 
   // Save data and call the API
   const saveAndCallApi = async () => {
-    const photoData = localStorage.getItem('visitorPhoto');
-    if (!photoData) {
+    // Retrieve the visitorData JSON object from sessionStorage
+    const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
+
+    if (!visitorData.photo) {
       alert('No photo available to save.');
       return;
     }
 
-    const visitorData = {
-      name: localStorage.getItem('visitorName'),
-      mobile: localStorage.getItem('visitorMobile'),
-      adhaar: localStorage.getItem('visitorAdhaar'),      
-      toVisit: localStorage.getItem('visitorToVisit'),
-      photo: photoData,
-    };
-
+    const accessToken = sessionStorage.getItem('authToken');
     try {
       const response = await fetch('http://localhost:5000/visitors', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer your_jwt_secret`,
+          Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(visitorData),
+        body: JSON.stringify(visitorData), // Send the updated visitorData object
       });
 
       if (response.ok) {
         const { visitorID } = await response.json();
-        localStorage.setItem('visitorID', visitorID); // Save visitorID for barcode generation
+        visitorData.barcode = visitorID; // Update the barcode in visitorData
+        sessionStorage.setItem('visitorData', JSON.stringify(visitorData)); // Save updated visitorData
         history.push('/barcode'); // Navigate to BarcodeGenerator
       } else {
         alert('Failed to save visitor data.');
@@ -246,6 +267,7 @@ const PhotoCapture: React.FC = () => {
   // Handle abort action
   const handleAbort = () => {
     setPhoto(null);
+    sessionStorage.removeItem('visitorData'); // Clear visitor data from sessionStorage
     closeCamera();
     history.push('/'); // Navigate back to the home route
   };
@@ -316,6 +338,7 @@ const PhotoCapture: React.FC = () => {
                 variant="contained"
                 color="primary"
                 sx={{ mr: 2 }}
+                disabled={isClippingEnabled} // Disable if clipping is already done
               >
                 Clip Image
               </Button>
@@ -324,10 +347,11 @@ const PhotoCapture: React.FC = () => {
                 variant="contained"
                 color="secondary"
                 sx={{ mr: 2 }}
+                disabled={!isClippingEnabled} // Enable only after clipping is done
               >
                 Save and Submit
               </Button>
-              <Button onClick={closeCamera} variant="outlined" color="secondary">
+              <Button onClick={handleAbort} variant="outlined" color="secondary">
                 Cancel
               </Button>
             </Box>
@@ -346,10 +370,22 @@ const PhotoCapture: React.FC = () => {
               }}
             />
             <Box sx={{ mt: 2 }}>
-              <Button onClick={startCamera} variant="contained" color="primary" sx={{ mr: 2 }}>
+              <Button
+                onClick={startCamera}
+                variant="contained"
+                color="primary"
+                sx={{ mr: 2 }}
+                disabled={isCameraStarted} // Disable if the camera is already started
+              >
                 Start Camera
               </Button>
-              <Button onClick={capturePhoto} variant="contained" color="secondary" sx={{ mr: 2 }}>
+              <Button
+                onClick={capturePhoto}
+                variant="contained"
+                color="secondary"
+                sx={{ mr: 2 }}
+                disabled={!isCameraStarted} // Enable only if the camera is started
+              >
                 Capture Photo
               </Button>
               <Button onClick={handleAbort} variant="outlined" color="secondary">

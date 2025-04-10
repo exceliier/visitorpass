@@ -21,7 +21,7 @@ const App: React.FC = () => {
         }}
       >
         <Container maxWidth="md">
-          <Typography variant="h4" gutterBottom align="center">
+          <Typography variant="h5" gutterBottom align="center">
             Visitor Pass Management
           </Typography>
           <Switch>

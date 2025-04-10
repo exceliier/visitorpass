@@ -17,7 +17,7 @@ const Login: React.FC = () => {
 
       if (response.ok) {
         const { token } = await response.json();
-        localStorage.setItem('authToken', token); // Save token
+        sessionStorage.setItem('authToken', token); // Save token
         history.push('/'); // Redirect to the home page
       } else {
         alert('Invalid credentials');

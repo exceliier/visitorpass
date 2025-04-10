@@ -24,7 +24,7 @@ router.post('/login', async (req, res) => {
 
     if (isPasswordValid) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '2d',
       });
       console.log('Token generated:', token);
       res.json({ token });
