@@ -67,53 +67,49 @@ button:focus-visible {
   }
 }
 @media print {
+  /* Reset body styles for printing */
   body {
     margin: 0;
     padding: 0;
     background-color: #ffffff;
   }
 
+  /* Printable content container */
   #printable-pass {
-    position: relative;
+    visibility: visible;
+    position: absolute; /* Align to the top-left corner */
     top: 0;
     left: 0;
-    width: 90mm; /* Slightly smaller than A6 width to allow for margins */
-    height: 130mm; /* Slightly smaller than A6 height to allow for margins */
-    margin: 5mm auto; /* Add margins around the content */
-    padding: 10mm; /* Add padding inside the container */
-    background-color: #ffffff;
-    border: 2px solid #000; /* Ensure the border is visible in print */
-    box-sizing: border-box;
+    width: 105mm; /* Exact A6 width */
+    height: 148mm; /* Exact A6 height */
+    padding: 0; /* Remove padding to avoid shifting */
+    background-color: #ffffff;    
+    box-sizing: border-box; /* Include padding and border in dimensions */
+    overflow: hidden; /* Prevent content overflow */
   }
 
-
-
+  /* Ensure images fit within the container */
   #printable-pass img {
-    max-width: 100%; /* Ensure images fit within the container */
-    height: auto;
+    max-width: 100%; /* Scale images to fit */
+    height: auto; /* Maintain aspect ratio */
   }
 
+  /* Make all content inside #printable-pass visible */
   #printable-pass * {
     visibility: visible;
   }
 
+  /* Hide everything outside #printable-pass */
   body * {
-    visibility: hidden; /* Hide everything outside #printable-pass */
+    visibility: hidden;
   }
 
-  /* Ensure the printable area starts at the top-left corner */
-  #printable-pass {
-    visibility: visible;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-  }
-
-  /* Set the paper size to A6 */
+  /* Set the paper size and orientation */
   @page {
-    size: A6;
-    margin: 5mm; /* Remove default margins */
+    position: absolute;
+    size: 105mm 148mm; /* Custom dimensions for A6 */
+    margin: 5mm; /* Remove all margins */
+    orientation: portrait; /* Set orientation to portrait */
   }
 }
 

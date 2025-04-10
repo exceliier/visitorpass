@@ -62,6 +62,7 @@ const PhotoCapture: React.FC = () => {
   const [isCameraStarted, setIsCameraStarted] = useState(false); // Track if the camera is started
   const [isPhotoCaptured, setIsPhotoCaptured] = useState(false); // Track if the photo is captured
   const [isClippingEnabled, setIsClippingEnabled] = useState(false); // Track if clipping is enabled
+  const [isCanvasVisible, setIsCanvasVisible] = useState(true);
   const history = useHistory();
 
   // Start the camera
@@ -73,6 +74,7 @@ const PhotoCapture: React.FC = () => {
         setIsCameraStarted(true); // Camera is now started
         setIsPhotoCaptured(false); // Reset photo captured state
         setIsClippingEnabled(false); // Reset clipping state
+        setIsCanvasVisible(true); // Ensure the canvas is visible
       }
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -307,7 +309,8 @@ const PhotoCapture: React.FC = () => {
       sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
   
       // Clear the rectangle from the overlay canvas
-      overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+      overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height); // Clear the rectangle
+      setIsCanvasVisible(false); // Hide the canvas after clipping
     };
   };
 
@@ -368,6 +371,12 @@ const PhotoCapture: React.FC = () => {
       setPhoto(null);
       setIsClippingEnabled(false); // Reset clipping state
       setIsPhotoCaptured(false); // Reset photo captured state
+      setClippingArea({
+        clipX: 0,
+        clipY: 0,
+        clipWidth: 300, // Default width
+        clipHeight: 300, // Default height
+      }); // Reset the rectangle
       startCamera(); // Restart the camera
     } else {
       // For other steps, navigate back to the home route
@@ -383,19 +392,18 @@ const PhotoCapture: React.FC = () => {
 
   // Cleanup on component unmount
   useEffect(() => {
-    return () => {
-      startCamera(); 
-    };
-  }, []);
-  useEffect(() => {
-    drawRectangle(); // Draw the rectangle whenever the clipping area changes
-  }, [clippingArea]);
+    // Automatically start the camera when the component mounts
+    startCamera();
 
-  useEffect(() => {
+    // Cleanup: Stop the camera when the component unmounts
     return () => {
       closeCamera();
     };
   }, []);
+
+  useEffect(() => {
+    drawRectangle(); // Draw the rectangle whenever the clipping area changes
+  }, [clippingArea]);
 
   useEffect(() => {
     drawRectangle();
@@ -433,19 +441,21 @@ const PhotoCapture: React.FC = () => {
                 objectFit: 'contain',
               }}
             />
-            <canvas
-              ref={canvasRef}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: 'auto',
-                pointerEvents: 'auto',
-              }}
-              onMouseDown={handleMouseDown}
-              onTouchStart={handleMouseDown}
-            />
+            {isCanvasVisible && (
+              <canvas
+                ref={canvasRef}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: 'auto',
+                  pointerEvents: 'auto',
+                }}
+                onMouseDown={handleMouseDown}
+                onTouchStart={handleMouseDown}
+              />
+            )}
             <Box sx={{ mt: 2 }}>
               <Button
                 onClick={clipCapturedImage}
@@ -461,10 +471,11 @@ const PhotoCapture: React.FC = () => {
                 variant="contained"
                 color="secondary"
                 sx={{ mr: 2 }}
-                disabled={!photo} // Enable only if a photo is available
+                disabled={!photo || isClippingEnabled} // Disable if no photo or clipping is enabled
               >
                 Save Without Clipping
               </Button>
+              
               <Button
                 onClick={saveAndCallApi}
                 variant="contained"

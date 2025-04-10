@@ -75,8 +75,8 @@ const PrintPass: React.FC = () => {
         id="printable-pass"
         sx={{
           textAlign: 'center',
-          p: 2,
-          border: '1px solid #ccc',
+          p: 1,
+          border: '2px solid #000',
           borderRadius: '8px',
           width: '100mm', // Match A6 width
           height: '140mm', // Match A6 height
@@ -87,9 +87,9 @@ const PrintPass: React.FC = () => {
         <img
           src="/logo.png" // Replace with your logo path
           alt="Logo"
-          style={{ width: '80px', marginBottom: '1rem' }}
+          style={{ width: '80px' }}
         />
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h6" gutterBottom>
           Sinchan Bhavan - Visitor Pass
         </Typography>
         {visitorData?.photo && (
@@ -98,24 +98,26 @@ const PrintPass: React.FC = () => {
             alt="Visitor"
             style={{
               width: 'auto',
-              height: '100px', // Set a fixed height for the image
-              borderRadius: '8px',
-              marginBottom: '1rem',
+              height: '120px', // Set a fixed height for the image
+              borderRadius: '8px',              
               objectFit: 'contain', // Ensures the entire image is visible within the box
             }}
           />
         )}
-        <Typography variant="h6">Name: {visitorData?.name}</Typography>
+        <Typography variant="h6"><strong> Name: {visitorData?.name}</strong></Typography>
         <Typography variant="body1">Mobile: {visitorData?.mobile}</Typography>
         <Typography variant="body1">Adhaar Number: {visitorData?.adhaar}</Typography>
         <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
-        <Typography variant="body1">Entry Time: {currentDateTime}</Typography> {/* Display current datetime */}
+        <Typography variant="body1"><strong> Time: {currentDateTime} </strong> </Typography> {/* Display current datetime */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             marginTop: '1rem',
+            overflow: 'hidden', // Ensure content doesn't overflow the box
+            maxWidth: '90%', // Limit the width of the barcode container
+            margin: '0 auto', // Center the barcode horizontally
           }}
         >
           <Barcode
