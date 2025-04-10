@@ -54,8 +54,8 @@ const PhotoCapture: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [clippingArea, setClippingArea] = useState({
-    clipX: 50,
-    clipY: 50,
+    clipX: 0,
+    clipY: 0,
     clipWidth: 300, // Increased width
     clipHeight: 300, // Increased height
   });
@@ -116,6 +116,9 @@ const PhotoCapture: React.FC = () => {
 
     // Save the updated visitorData object back to sessionStorage
     sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
+
+    // Redraw the rectangle after capturing the photo
+    drawRectangle();
   };
 
   // Draw the fixed-size rectangle on the canvas
@@ -144,14 +147,14 @@ const PhotoCapture: React.FC = () => {
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-  
+
     const rect = canvas.getBoundingClientRect();
     const startX = 'touches' in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
     const startY = 'touches' in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
-  
+
     // Add a margin around the rectangle to make it easier to grab
-    const margin = 10;
-  
+    const margin = 0;
+
     // Check if the touch/mouse is inside the rectangle (with margin)
     if (
       startX >= clippingArea.clipX - margin &&
@@ -161,7 +164,7 @@ const PhotoCapture: React.FC = () => {
     ) {
       const offsetX = startX - clippingArea.clipX;
       const offsetY = startY - clippingArea.clipY;
-  
+
       const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
         const currentX =
           'touches' in moveEvent
@@ -171,22 +174,22 @@ const PhotoCapture: React.FC = () => {
           'touches' in moveEvent
             ? moveEvent.touches[0].clientY - rect.top
             : (moveEvent as MouseEvent).clientY - rect.top;
-  
-        // Update the rectangle's position
+
+        // Update the rectangle's position, ensuring it stays within the canvas boundaries
         setClippingArea((prev) => ({
           ...prev,
           clipX: Math.max(0, Math.min(canvas.width - prev.clipWidth, currentX - offsetX)),
           clipY: Math.max(0, Math.min(canvas.height - prev.clipHeight, currentY - offsetY)),
         }));
       };
-  
+
       const handleEnd = () => {
         document.removeEventListener('mousemove', handleMove);
         document.removeEventListener('mouseup', handleEnd);
         document.removeEventListener('touchmove', handleMove);
         document.removeEventListener('touchend', handleEnd);
       };
-  
+
       document.addEventListener('mousemove', handleMove);
       document.addEventListener('mouseup', handleEnd);
       document.addEventListener('touchmove', handleMove);
@@ -201,23 +204,36 @@ const PhotoCapture: React.FC = () => {
       console.error('No photo available to clip.');
       return;
     }
-
+  
     setIsClippingEnabled(true); // Enable clipping state
-
+  
     const image = new Image();
     image.src = photo;
   
     image.onload = () => {
       const canvas = document.createElement('canvas');
+      const overlayCanvas = canvasRef.current;
   
-      // Scale the clipping area to match the original image dimensions
-      const scaleX = image.width / canvasRef.current!.width; // Scale factor for X
-      const scaleY = image.height / canvasRef.current!.height; // Scale factor for Y
+      if (!overlayCanvas) {
+        console.error('Overlay canvas is not available.');
+        return;
+      }
   
-      const clipX = clippingArea.clipX * scaleX;
-      const clipY = clippingArea.clipY * scaleY;
-      const clipWidth = clippingArea.clipWidth * scaleX;
-      const clipHeight = clippingArea.clipHeight * scaleY;
+      // Ensure the overlay canvas contains the image
+      const overlayContext = overlayCanvas.getContext('2d');
+      if (!overlayContext) {
+        console.error('Overlay canvas context is not available.');
+        return;
+      }
+  
+      // Draw the image onto the overlay canvas if not already drawn
+      overlayContext.drawImage(image, 0, 0, overlayCanvas.width, overlayCanvas.height);
+  
+      // Use the rectangle's dimensions directly
+      const clipX = clippingArea.clipX;
+      const clipY = clippingArea.clipY;
+      const clipWidth = clippingArea.clipWidth;
+      const clipHeight = clippingArea.clipHeight;
   
       // Set the canvas dimensions to match the clipping area
       canvas.width = clipWidth;
@@ -229,13 +245,22 @@ const PhotoCapture: React.FC = () => {
         return;
       }
   
+      // Map the clipping area to the original image dimensions
+      const scaleX = image.width / overlayCanvas.width;
+      const scaleY = image.height / overlayCanvas.height;
+  
+      const sourceX = Math.round(clipX * scaleX);
+      const sourceY = Math.round(clipY * scaleY);
+      const sourceWidth = Math.round(clipWidth * scaleX);
+      const sourceHeight = Math.round(clipHeight * scaleY);
+  
       // Draw the clipped portion of the image onto the canvas
       context.drawImage(
-        image,
-        clipX, // Source X
-        clipY, // Source Y
-        clipWidth, // Source Width
-        clipHeight, // Source Height
+        image, // Use the original image as the source
+        sourceX, // Source X
+        sourceY, // Source Y
+        sourceWidth, // Source Width
+        sourceHeight, // Source Height
         0, // Destination X
         0, // Destination Y
         clipWidth, // Destination Width
@@ -248,26 +273,15 @@ const PhotoCapture: React.FC = () => {
   
       setPhoto(clippedPhotoData); // Update the photo with the clipped image
   
-      // Retrieve the visitorData JSON object from sessionStorage
+      // Update visitorData in sessionStorage
       const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
-  
-      // Update the photo field in visitorData
       visitorData.photo = clippedPhotoData;
-  
-      // Save the updated visitorData object back to sessionStorage
       sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
   
       // Clear the rectangle from the overlay canvas
-      const overlayCanvas = canvasRef.current;
-      if (overlayCanvas) {
-        const overlayContext = overlayCanvas.getContext('2d');
-        if (overlayContext) {
-          overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-        }
-      }
+      overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
     };
   };
-  
 
   // Save data and call the API
   const saveAndCallApi = async () => {
@@ -329,6 +343,9 @@ const PhotoCapture: React.FC = () => {
       closeCamera();
       history.push('/'); // Navigate back to the home route
     }
+
+    // Redraw the rectangle after resetting the photo
+    drawRectangle();
   };
 
   // Cleanup on component unmount
