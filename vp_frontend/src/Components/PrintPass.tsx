@@ -89,9 +89,13 @@ const PrintPass: React.FC = () => {
           alt="Logo"
           style={{ width: '80px' }}
         />
-        <Typography variant="h6" gutterBottom>
-          Sinchan Bhavan - Visitor Pass
+        <Typography variant="body2" gutterBottom>
+          Sinchan Bhavan, Chhatrapati Sambhajinagar
         </Typography>
+        <Typography variant="h6" gutterBottom>
+          Visitor Pass
+        </Typography>
+        
         {visitorData?.photo && (
           <img
             src={visitorData.photo}
@@ -106,9 +110,19 @@ const PrintPass: React.FC = () => {
         )}
         <Typography variant="h6"><strong> Name: {visitorData?.name}</strong></Typography>
         <Typography variant="body1">Mobile: {visitorData?.mobile}</Typography>
-        <Typography variant="body1">Adhaar Number: {visitorData?.adhaar}</Typography>
+        <Typography variant="body1">ID Number: {visitorData?.adhaar}</Typography>
         <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
         <Typography variant="body1"><strong> Time: {currentDateTime} </strong> </Typography> {/* Display current datetime */}
+        <Typography variant='body2'>
+          Valid upto{' '}
+          {new Date(
+            Math.max(
+              new Date(currentDateTime).getTime() + 1 * 60 * 60 * 1000,
+              new Date(currentDateTime).setHours(17, 0, 0, 0)
+            )
+          ).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}{' '}
+          on date of issue
+        </Typography>
         <Box
           sx={{
             display: 'flex',
@@ -126,7 +140,9 @@ const PrintPass: React.FC = () => {
             height={40} // Adjust barcode height
             margin={0} // Remove extra margins
           />
+          
         </Box>
+        
       </Box>
       <Box sx={{ mt: 2, textAlign: 'center' }}>
         <Button onClick={handlePrint} variant="contained" color="primary" sx={{ mr: 2 }}>

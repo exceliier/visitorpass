@@ -126,10 +126,22 @@ const DataForm: React.FC = () => {
   };
 
   const handlePhotoOrBarcode = async () => {
+    const isValidDrivingLicense = (value: string) => /^[A-Z]{2}\d{2} \d{11}$/.test(value); // Format: Two letters, two digits, space, 11 digits
+    const isValidPassport = (value: string) => /^[A-Z]{1}[0-9]{7}$/.test(value); // Format: One letter followed by 7 digits
+
+    const isValidElectorsID = (value: string) => /^[A-Z]{3}[0-9]{7}$/.test(value); // Format: Three letters followed by 7 digits
+
     const newErrors = {
       name: name.length < 5 ? 'Name must be at least 5 characters long.' : '',
       mobile: !/^\d{10}$/.test(mobile) ? 'Mobile number must be exactly 10 digits.' : '',
-      adhaar: !isValidAdhaarOrPAN(adhaar) ? 'Enter a valid Adhaar (12 digits) or PAN (ABCDE1234F).' : '',
+      adhaar: !(
+      isValidAdhaarOrPAN(adhaar) ||
+      isValidDrivingLicense(adhaar) ||
+      isValidPassport(adhaar) ||
+      isValidElectorsID(adhaar)
+      )
+      ? 'Enter a valid Adhaar (12 digits), PAN (ABCDE1234F), Driving License (e.g., KA01 12345678901), Passport (A1234567), or Electors ID (e.g., ABC1234567).'
+      : '',
       toVisit: toVisit.length < 5 ? 'To Whom to Visit must be at least 5 characters long.' : '',
     };
 

@@ -58,7 +58,7 @@ const PhotoCapture: React.FC = () => {
     clipX: 0,
     clipY: 0,
     clipWidth: 300, // Increased width
-    clipHeight: 300, // Increased height
+    clipHeight: 400, // Increased height
   });
   const [isCameraStarted, setIsCameraStarted] = useState(false); // Track if the camera is started
   const [isPhotoCaptured, setIsPhotoCaptured] = useState(false); // Track if the photo is captured
