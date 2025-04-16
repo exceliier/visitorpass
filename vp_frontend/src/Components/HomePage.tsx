@@ -13,6 +13,7 @@ const HomePage: React.FC = () => {
 
   // Format the selected date to Indian format (DD-MM-YYYY)
   const formatDateToIndian = (date: string): string => {
+    if (!date) return 'Invalid Date'; // Handle empty or invalid dates
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
     return new Intl.DateTimeFormat('en-IN', options).format(new Date(date));
   };
