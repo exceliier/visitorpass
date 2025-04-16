@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
-import { Button, TextField, Typography, Container, Box, IconButton, Checkbox, FormControlLabel } from '@mui/material';
+import {
+  Button,
+  TextField,
+  Typography,
+  Container,
+  Box,
+  IconButton,
+  Checkbox,
+  FormControlLabel,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useHistory } from 'react-router-dom';
 import axiosInstance from '../axiosInstance'; // Import the centralized Axios instance
+
 /**
  * The `DataForm` component is a React functional component that provides a form for entering and managing visitor data.
  * It includes fields for name, mobile number, Adhaar/PAN, and the person to visit, along with functionality for photo handling.
@@ -22,6 +36,7 @@ import axiosInstance from '../axiosInstance'; // Import the centralized Axios in
  * - `mobile`: Stores the visitor's mobile number.
  * - `adhaar`: Stores the visitor's Adhaar or PAN number.
  * - `toVisit`: Stores the name of the person to visit.
+ * - `otherToVisit`: Stores additional text when "Other" is selected in the dropdown.
  * - `photo`: Stores the visitor's photo (if available).
  * - `useOldPhoto`: Boolean indicating whether to use an existing photo.
  * - `errors`: Object containing validation error messages for form fields.
@@ -52,6 +67,7 @@ const DataForm: React.FC = () => {
   const [mobile, setMobile] = useState('');
   const [adhaar, setAdhaar] = useState('');
   const [toVisit, setToVisit] = useState('');
+  const [otherToVisit, setOtherToVisit] = useState(''); // State for additional text when "Other" is selected
   const [photo, setPhoto] = useState('');
   const [useOldPhoto, setUseOldPhoto] = useState(false); // Checkbox state
   const [errors, setErrors] = useState({
@@ -68,6 +84,7 @@ const DataForm: React.FC = () => {
     setMobile('');
     setAdhaar('');
     setToVisit('');
+    setOtherToVisit('');
     setPhoto('');
     setUseOldPhoto(false);
     setErrors({
@@ -125,24 +142,31 @@ const DataForm: React.FC = () => {
     return adhaarRegex.test(value) || panRegex.test(value);
   };
 
+  const handleToVisitChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const value = event.target.value as string;
+    setToVisit(value);
+    if (value !== 'Other') {
+      setOtherToVisit(''); // Clear additional text if "Other" is not selected
+    }
+  };
+
   const handlePhotoOrBarcode = async () => {
     const isValidDrivingLicense = (value: string) => /^[A-Z]{2}\d{2} \d{11}$/.test(value); // Format: Two letters, two digits, space, 11 digits
     const isValidPassport = (value: string) => /^[A-Z]{1}[0-9]{7}$/.test(value); // Format: One letter followed by 7 digits
-
     const isValidElectorsID = (value: string) => /^[A-Z]{3}[0-9]{7}$/.test(value); // Format: Three letters followed by 7 digits
 
     const newErrors = {
       name: name.length < 5 ? 'Name must be at least 5 characters long.' : '',
       mobile: !/^\d{10}$/.test(mobile) ? 'Mobile number must be exactly 10 digits.' : '',
       adhaar: !(
-      isValidAdhaarOrPAN(adhaar) ||
-      isValidDrivingLicense(adhaar) ||
-      isValidPassport(adhaar) ||
-      isValidElectorsID(adhaar)
+        isValidAdhaarOrPAN(adhaar) ||
+        isValidDrivingLicense(adhaar) ||
+        isValidPassport(adhaar) ||
+        isValidElectorsID(adhaar)
       )
-      ? 'Enter a valid Adhaar (12 digits), PAN (ABCDE1234F), Driving License (e.g., KA01 12345678901), Passport (A1234567), or Electors ID (e.g., ABC1234567).'
-      : '',
-      toVisit: toVisit.length < 5 ? 'To Whom to Visit must be at least 5 characters long.' : '',
+        ? 'Enter a valid Adhaar (12 digits), PAN (ABCDE1234F), Driving License (e.g., KA01 12345678901), Passport (A1234567), or Electors ID (e.g., ABC1234567).'
+        : '',
+      toVisit: toVisit === 'Other' && otherToVisit.trim() === '' ? 'Please specify whom to visit.' : '',
     };
 
     setErrors(newErrors);
@@ -159,7 +183,7 @@ const DataForm: React.FC = () => {
       name: name || '',
       mobile: mobile || '',
       adhaar: adhaar || '',
-      toVisit: toVisit || '',
+      toVisit: toVisit === 'Other' ? otherToVisit : toVisit, // Use additional text if "Other" is selected
       photo: photo || '', // Use the existing photo if available
       barcode: '', // Leave barcode blank to be populated later from the database
       date: new Date().toISOString(), // Add current datetime in ISO format
@@ -207,9 +231,9 @@ const DataForm: React.FC = () => {
       }}
     >
       <Container maxWidth="sm">
-        <Box sx={{ textAlign: 'center', p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+        <Box sx={{ p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
           <form>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom textAlign="center">
               Enter Visitor Data
             </Typography>
             <TextField
@@ -239,7 +263,7 @@ const DataForm: React.FC = () => {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <TextField
-                label="Adhaar/PAN" // Updated label
+                label="Adhaar/PAN/DrLic/EID/passport" // Updated label
                 value={adhaar}
                 onChange={(e) => setAdhaar(e.target.value)}
                 fullWidth
@@ -252,16 +276,41 @@ const DataForm: React.FC = () => {
                 <SearchIcon />
               </IconButton>
             </Box>
-            <TextField
-              label="To Whom to Visit"
-              value={toVisit}
-              onChange={(e) => setToVisit(e.target.value)}
-              fullWidth
-              margin="normal"
-              required
-              error={!!errors.toVisit}
-              helperText={errors.toVisit}
-            />
+            <FormControl variant='outlined' fullWidth margin="normal" required error={!!errors.toVisit}>
+            <InputLabel id="to-visit-label">To Whom to Visit</InputLabel>
+              <Select
+                labelId="to-visit-label" // Link the InputLabel to the Select
+                id="to-visit" // Add an id for the Select
+                value={toVisit}
+                onChange={handleToVisitChange}
+              >
+                <MenuItem value="GMIDC Technical-section">GMIDC Technical</MenuItem>
+                <MenuItem value="GMIDC Accounts-section">GMIDC Accounts</MenuItem>
+                <MenuItem value="GMIDC Dakshata-court-section">GMIDC Dakshata-court</MenuItem>
+                <MenuItem value="GMIDC-Ex Dir">GMIDC-ED</MenuItem>
+                <MenuItem value="GMIDC-Sup Engr">GMIDC-SE</MenuItem>
+                <MenuItem value="GMIDC-EE/DySE">GMIDC-SE</MenuItem>
+                <MenuItem value="CEWRD-Techincal">CEWRD-Techincal</MenuItem>
+                <MenuItem value="CEWRD-Corr. Branch">CEWRD-CB</MenuItem>
+                <MenuItem value="CEWRD-Chief Engr">CEWRD-CE</MenuItem>
+                <MenuItem value="CEWRD-Ex Engr">CEWRD-PA</MenuItem>
+                <MenuItem value="QCC">Qquality Control Circle</MenuItem>
+                <MenuItem value="AID">Aurangabad Irrigation Division</MenuItem>
+                <MenuItem value="MID-1">MI Divisoin No-1</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </Select>
+              {errors.toVisit && <Typography color="error">{errors.toVisit}</Typography>}
+            </FormControl>
+            {toVisit === 'Other' && (
+              <TextField
+                label="Specify Whom to Visit"
+                value={otherToVisit}
+                onChange={(e) => setOtherToVisit(e.target.value)}
+                fullWidth
+                margin="normal"
+                required
+              />
+            )}
             <Button type="button" variant="outlined" color="secondary" onClick={goHome}           
             style={{ marginRight: '30px' }}>
               HOME
@@ -276,7 +325,6 @@ const DataForm: React.FC = () => {
               }
               label="Use Old Photo"
             />
-            
             <Button
               type="button"
               variant="contained"
@@ -292,7 +340,6 @@ const DataForm: React.FC = () => {
           </form>
         </Box>
       </Container>
-
     </Box>
   );
 };

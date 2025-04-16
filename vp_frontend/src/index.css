@@ -67,50 +67,73 @@ button:focus-visible {
   }
 }
 @media print {
-  /* Reset body styles for printing */
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: #ffffff;
-  }
-
-  /* Printable content container */
-  #printable-pass {
-    visibility: visible;
-    position: absolute; /* Align to the top-left corner */
-    top: 0;
-    left: 0;
-    width: 96mm; /* Exact A6 width */
-    height: 140mm; /* Exact A6 height */
-    padding: 0; /* Remove padding to avoid shifting */
-    background-color: #ffffff;    
-    box-sizing: border-box; /* Include padding and border in dimensions */
-    overflow: hidden; /* Prevent content overflow */
-    margin: 15px;
-  }
-
-  /* Ensure images fit within the container */
-  #printable-pass img {
-    max-width: 100%; /* Scale images to fit */
-    height: auto; /* Maintain aspect ratio */
-  }
-
-  /* Make all content inside #printable-pass visible */
-  #printable-pass * {
-    visibility: visible;
-  }
-
-  /* Hide everything outside #printable-pass */
+  /* General Reset for Printing */
   body * {
     visibility: hidden;
   }
 
-  /* Set the paper size and orientation */
-  @page {
-    position: relative;
-    size: 105mm 148mm; /* Custom dimensions for A6 */
-    margin: 10mm; 
-    orientation: portrait; /* Set orientation to portrait */
+  /* Pass Printing (A6) */
+  #printable-pass, #printable-pass * {
+    visibility: visible;
+  }
+
+  @page printable-pass {
+    size: 105mm 148mm; /* A6 size */
+    margin: 10mm; /* Margins for the pass */
+  }
+
+  #printable-pass {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 96mm; /* Exact A6 width */
+    height: 140mm; /* Exact A6 height */
+    padding: 0;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    overflow: hidden;
+    page: printable-pass; /* Apply the A6 page size */
+  }
+
+  /* Modal Printing (A4) */
+  #printable-modal, #printable-modal * {
+    visibility: visible;
+  }
+
+  @page printable-modal {
+    size: A4; /* A4 size */
+    margin: 20mm; /* Margins for the modal */
+  }
+
+  #printable-modal {
+    position: static;
+    transform: none;
+    width: 100%;
+    padding: 0;
+    box-shadow: none;
+    background-color: #ffffff;
+    page: printable-modal; /* Apply the A4 page size */
+  }
+
+  /* Table Styles for Modal */
+  #printable-modal table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  #printable-modal th, #printable-modal td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+  }
+
+  /* Ensure the header row is repeated on each page */
+  #printable-modal thead {
+    display: table-header-group;
+  }
+
+  #printable-modal tbody {
+    display: table-row-group;
   }
 }
 

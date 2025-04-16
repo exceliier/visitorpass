@@ -91,4 +91,33 @@ router.get('/search', verifyToken, async (req, res) => {
   }
 });
 
+// Get all visitors for a specific date
+router.get('/by-date', verifyToken, async (req, res) => {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res
+        .status(400)
+        .json({ message: 'Date query parameter is required.' });
+    }
+
+    // Parse the date and create a range for the entire day
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0); // Start of the day
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999); // End of the day
+
+    // Find visitors whose date falls within the range
+    const visitors = await Visitor.find({
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    res.json(visitors);
+  } catch (error) {
+    console.error('Error fetching visitors by date:', error);
+    res.status(500).json({ message: 'Failed to fetch visitors by date.' });
+  }
+});
+
 module.exports = router;
