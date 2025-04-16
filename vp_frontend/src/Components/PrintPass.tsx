@@ -66,7 +66,7 @@ const PrintPass: React.FC = () => {
   };
 
   const handleNew = () => {
-    history.push('/'); // Navigate back to the DataForm page
+    history.push('/pass'); // Navigate back to the DataForm page
   };
 
   return (
@@ -117,7 +117,7 @@ const PrintPass: React.FC = () => {
           Valid upto{' '}
           {new Date(
             Math.max(
-              new Date(currentDateTime).getTime() + 1 * 60 * 60 * 1000,
+              new Date(currentDateTime).getTime() + 2 * 60 * 60 * 1000,
               new Date(currentDateTime).setHours(17, 0, 0, 0)
             )
           ).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}{' '}

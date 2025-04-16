@@ -191,6 +191,11 @@ const DataForm: React.FC = () => {
     }
   };
 
+  function goHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    event.preventDefault();
+    history.push('/'); // Navigate to the home page
+  }
+
   return (
     <Box
       sx={{
@@ -257,6 +262,10 @@ const DataForm: React.FC = () => {
               error={!!errors.toVisit}
               helperText={errors.toVisit}
             />
+            <Button type="button" variant="outlined" color="secondary" onClick={goHome}           
+            style={{ marginRight: '30px' }}>
+              HOME
+            </Button>
             <FormControlLabel
               control={
                 <Checkbox
@@ -267,6 +276,7 @@ const DataForm: React.FC = () => {
               }
               label="Use Old Photo"
             />
+            
             <Button
               type="button"
               variant="contained"

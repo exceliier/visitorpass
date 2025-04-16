@@ -377,7 +377,7 @@ const PhotoCapture: React.FC = () => {
       setPhoto(null);
       sessionStorage.removeItem('visitorData'); // Clear visitor data from sessionStorage
       closeCamera();
-      history.push('/'); // Navigate back to the home route
+      history.push('/pass'); // Navigate back to the home route
     }
 
     // Redraw the rectangle after resetting the photo

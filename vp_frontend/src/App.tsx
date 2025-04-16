@@ -5,6 +5,8 @@ import DataForm from './Components/DataForm';
 import BarcodeGenerator from './Components/BarcodeGenerator';
 import PrintPass from './Components/PrintPass';
 import Login from './Components/Login';
+import HomePage from './Components/HomePage';
+
 import PrivateRoute from './Components/PrivateRoute';
 import { Container, Typography, Box } from '@mui/material';
 
@@ -44,7 +46,8 @@ const App: React.FC = () => {
           </Typography>
           <Switch>
             <Route path="/login" component={Login} />
-            <PrivateRoute exact path="/" component={DataForm} />
+            <PrivateRoute exact path="/" component={HomePage} />
+            <PrivateRoute exact path="/pass" component={DataForm} />
             <PrivateRoute path="/photo" component={PhotoCapture} />
             <PrivateRoute path="/barcode" component={BarcodeGenerator} />
             <PrivateRoute path="/print" component={PrintPass} />
