@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Barcode from 'react-barcode';
 import { Button, Typography, Box, Container } from '@mui/material';

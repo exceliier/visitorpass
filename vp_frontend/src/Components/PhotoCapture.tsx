@@ -1,3 +1,4 @@
+'use client';
 import React, { useRef, useState, useEffect } from 'react';
 import { Button, Typography, Box, Container } from '@mui/material';
 import { useHistory } from 'react-router-dom';
@@ -267,8 +268,8 @@ const PhotoCapture: React.FC = () => {
       const clipHeight = clippingArea.clipHeight;
   
       // Set the canvas dimensions to match the clipping area
-      canvas.width = clipWidth;
-      canvas.height = clipHeight;
+      canvas.width = 300; // Desired width for the clipped image
+      canvas.height = 400; // Desired height for the clipped image
   
       const context = canvas.getContext('2d');
       if (!context) {
@@ -285,7 +286,7 @@ const PhotoCapture: React.FC = () => {
       const sourceWidth = Math.round(clipWidth * scaleX);
       const sourceHeight = Math.round(clipHeight * scaleY);
   
-      // Draw the clipped portion of the image onto the canvas
+      // Draw the clipped portion of the image onto the canvas and resize it
       context.drawImage(
         image, // Use the original image as the source
         sourceX, // Source X
@@ -294,15 +295,15 @@ const PhotoCapture: React.FC = () => {
         sourceHeight, // Source Height
         0, // Destination X
         0, // Destination Y
-        clipWidth, // Destination Width
-        clipHeight // Destination Height
+        canvas.width, // Destination Width (resized)
+        canvas.height // Destination Height (resized)
       );
   
-      // Convert the clipped canvas content to a data URL
+      // Convert the resized clipped canvas content to a data URL
       const clippedPhotoData = canvas.toDataURL('image/png');
-      console.log('Clipped photo data:', clippedPhotoData);
+      console.log('Clipped and resized photo data:', clippedPhotoData);
   
-      setPhoto(clippedPhotoData); // Update the photo with the clipped image
+      setPhoto(clippedPhotoData); // Update the photo with the clipped and resized image
   
       // Update visitorData in sessionStorage
       const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
@@ -430,9 +431,9 @@ const PhotoCapture: React.FC = () => {
               alt="Captured"
               style={{
                 borderRadius: '8px',
-                width: '100%',                
-                height: 'auto',
-                objectFit: 'contain',
+                maxWidth: '100%', // Limit the width to the container
+                height: 'auto', // Maintain aspect ratio
+                objectFit: 'contain', // Ensure the image fits within the container
               }}
             />
             {isCanvasVisible && (
@@ -442,8 +443,8 @@ const PhotoCapture: React.FC = () => {
                   position: 'absolute',
                   top: 0,
                   left: 0,
-                  width: '100%',
-                  height: 'auto',
+                  maxWidth: '100%', // Limit the width to the container
+                  height: 'auto', // Maintain aspect ratio
                   pointerEvents: 'auto',
                 }}
                 onMouseDown={handleMouseDown}

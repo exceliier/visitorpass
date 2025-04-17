@@ -8,11 +8,21 @@ export default defineConfig({
     watch: {
       usePolling: true, // Use polling if file changes are not detected
     },
-    https: {
-      key: '../certs/server-key.pem', // Relative path to your private key
-      cert: '../certs/server-cert.pem', // Relative path to your certificate
-    },
     host: '0.0.0.0', // Ensure the server runs on localhost
-    port: 3000,        // Optional: Change the port if needed
+    port: 3000,      // Optional: Change the port if needed
+  },
+  build: {
+    commonjsOptions: {
+      ignoreTryCatch: false, // Prevent warnings from CommonJS modules
+    },
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress 'use client' warnings
+        if (warning.message.includes("'use client' was ignored")) {
+          return;
+        }
+        warn(warning);
+      },
+    },
   },
 });

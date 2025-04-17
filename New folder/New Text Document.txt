@@ -1,0 +1,26 @@
+//pm2 serve c:\vp\vp_frontend\dist 443 --name visitorpass-frontend --ssl-key d:\visitorpass\certs\server-key.pem --ssl-cert d:\visitorpass\certs\server-cert.pem
+Remove pm2 and startup processes
+
+Front end
+npm run build
+copy dist to server
+
+
+inside backend: 
+npm install --production
+
+copy entire code to server
+
+Server
+install :
+
+node.js
+iisnode
+redirect
+
+iis
+install ssl for front end
+add web sites
+front end https (443)
+backend https 5000
+for IP 192.168.1.85

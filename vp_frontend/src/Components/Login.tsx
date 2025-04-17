@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { TextField, Button, Typography, Box, Container } from '@mui/material';
