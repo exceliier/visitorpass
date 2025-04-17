@@ -1,0 +1,5 @@
+pm2 serve c:\vp\vp_frontend\dist 443 --name visitorpass-frontend --ssl-key d:\visitorpass\certs\server-key.pem --ssl-cert d:\visitorpass\certs\server-cert.pem
+
+
+inside backend:
+npm install --production
