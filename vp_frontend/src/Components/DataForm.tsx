@@ -167,7 +167,9 @@ const DataForm: React.FC = () => {
       )
         ? 'Enter a valid Adhaar (12 digits), PAN (ABCDE1234F), Driving License (e.g., KA01 12345678901), Passport (A1234567), or Electors ID (e.g., ABC1234567).'
         : '',
-      toVisit: toVisit === 'Other' && otherToVisit.trim() === '' ? 'Please specify whom to visit.' : '',
+      toVisit: toVisit.trim() === '' || (toVisit === 'Other' && otherToVisit.trim() === '')
+        ? 'Please specify whom to visit.'
+        : '',
     };
 
     setErrors(newErrors);
@@ -290,7 +292,7 @@ const DataForm: React.FC = () => {
                 <MenuItem value="GMIDC Dakshata-court-section">GMIDC Dakshata-court</MenuItem>
                 <MenuItem value="GMIDC-Ex Dir">GMIDC-ED</MenuItem>
                 <MenuItem value="GMIDC-Sup Engr">GMIDC-SE</MenuItem>
-                <MenuItem value="GMIDC-EE/DySE">GMIDC-SE</MenuItem>
+                <MenuItem value="GMIDC-EE/DySE">GMIDC-EE</MenuItem>
                 <MenuItem value="CEWRD-Techincal">CEWRD-Techincal</MenuItem>
                 <MenuItem value="CEWRD-Corr. Branch">CEWRD-CB</MenuItem>
                 <MenuItem value="CEWRD-Chief Engr">CEWRD-CE</MenuItem>
