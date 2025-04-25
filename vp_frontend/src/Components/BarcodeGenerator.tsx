@@ -2,7 +2,7 @@
 import React from 'react';
 import Barcode from 'react-barcode';
 import { Button, Typography, Box, Container } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 
 /**
  * BarcodeGenerator Component
@@ -20,7 +20,7 @@ import { useHistory } from 'react-router-dom';
  * - The barcode is generated using the `Barcode` component.
  *
  * @dependencies
- * - `useHistory` from `react-router-dom` for navigation.
+ * - `useNavigate` from `react-router-dom` for navigation.
  * - `Container`, `Box`, `Typography`, and `Button` from Material-UI for layout and styling.
  * - `Barcode` for rendering the barcode.
  *
@@ -39,7 +39,7 @@ import { useHistory } from 'react-router-dom';
  * <BarcodeGenerator />
  */
 const BarcodeGenerator: React.FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate(); // Replace useHistory with useNavigate
 
   // Retrieve the visitorData JSON object from sessionStorage
   const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
@@ -69,7 +69,7 @@ const BarcodeGenerator: React.FC = () => {
         <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
         <Barcode value={visitorData?.barcode || ''} width={1} height={50} />
         <Box sx={{ mt: 2 }}>
-          <Button onClick={() => history.push('/print')} variant="contained" color="primary">
+          <Button onClick={() => navigate('/print')} variant="contained" color="primary">
             Print Pass
           </Button>
         </Box>

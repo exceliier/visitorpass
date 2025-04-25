@@ -1,13 +1,13 @@
 'use client';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 import { TextField, Button, Typography, Box, Container } from '@mui/material';
 import axiosInstance from '../axiosInstance'; // Import the centralized Axios instance
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory();
+  const navigate = useNavigate(); // Replace useHistory with useNavigate
 
   /**
    * Handles the login process by sending a POST request to the authentication endpoint.
@@ -21,7 +21,7 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         const { token } = response.data;
         sessionStorage.setItem('authToken', token); // Save token in sessionStorage
-        history.push('/'); // Redirect to the home page
+        navigate('/'); // Redirect to the home page
       } else {
         alert('Invalid credentials');
       }

@@ -1,29 +1,18 @@
 'use client';
 import React, { useState } from 'react';
-import { Button, TextField, Box, Container, Typography, Modal } from '@mui/material';
-import { useHistory } from 'react-router-dom';
-import IMBTable from './IMBTable'; // Import the IMBTable component
+import { Button, TextField, Box, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import axiosInstance from '../axiosInstance'; // Use the axiosInstance
 
 const HomePage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search input
   const [selectedDate, setSelectedDate] = useState<string>(''); // State for date input
-  const [modalOpen, setModalOpen] = useState<boolean>(false); // State for modal visibility
   const [visitorData, setVisitorData] = useState<any[]>([]); // State for fetched visitor data
-  const history = useHistory();
+  const navigate = useNavigate(); // Initialize navigate
 
-  // Format the selected date to Indian format (DD-MM-YYYY)
-  const formatDateToIndian = (date: string): string => {
-    if (!date) return 'Invalid Date'; // Handle empty or invalid dates
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    return new Intl.DateTimeFormat('en-IN', options).format(new Date(date));
-  };
 
-  // Navigate to the Gate Pass (DataForm) page
-  const handleNavigateToGatePass = () => {
-    history.push('/pass'); // Replace '/gatepass' with the actual route for DataForm
-  };
-
+  const handlePass = () => {
+    navigate('/pass'); // Navigate to the DataForm component
+  }
   // Handle printing the daily register
   const handlePrintDailyRegister = async () => {
     if (!selectedDate) {
@@ -38,39 +27,34 @@ const HomePage: React.FC = () => {
       });
 
       setVisitorData(response.data); // Set the fetched data
-      setModalOpen(true); // Open the modal
+
+      // Navigate to the DailyRegisterPage with state
+      navigate('/daily-register', {
+        state: { selectedDate, visitorData: response.data },
+      });
     } catch (error) {
       console.error('Error fetching daily register:', error);
       alert('Failed to fetch daily register. Please try again.');
     }
   };
 
-  // Close the modal
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
   return (
     <Container maxWidth="sm" sx={{ textAlign: 'center', marginTop: '2rem' }}>
-      
-      {/* Button to navigate to Gate Pass */}
-      <Box sx={{ marginBottom: '2rem' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleNavigateToGatePass}
-        >
-          Go to Gate Pass
-        </Button>
-      </Box>
-
       {/* Date input and button for printing daily register */}
+      <Button
+          variant="contained"
+          color="secondary"
+          onClick={handlePass} // Navigate to the DataForm component
+          gap="5rem"
+        >
+          Visitor Passes
+        </Button>
       <Box sx={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
         <TextField
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          size="small" // Use compact size for the date input
+          size="small"
           sx={{ width: 'auto' }}
         />
         <Button
@@ -81,67 +65,6 @@ const HomePage: React.FC = () => {
           Print Register
         </Button>
       </Box>
-     
-
-      {/* Modal for displaying the daily register */}
-      <Modal open={modalOpen} onClose={handleCloseModal}>
-        <Box
-          id="printable-modal" // Add a unique ID for the modal
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            "@media print": {
-              "& .no-print": {
-                display: "none", // Hide elements with the no-print class during printing
-              },
-            },
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Daily Visitor Register for {formatDateToIndian(selectedDate)}
-          </Typography>
-          <IMBTable
-            data={visitorData.map((visitor) => ({
-              ...visitor,
-              date: new Date(visitor.date).toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-              }), // Format the date field to display only the time
-            }))}
-            visibleColumns={['name', 'mobile', 'adhaar', 'toVisit', 'date']}
-            columnMap={{
-              name: 'Name',
-              mobile: 'Mobile',
-              adhaar: 'ID',
-              toVisit: 'Whom To Visit',
-              date: 'Entry Time', // Update the label for the time column
-            }}
-            title=""
-            noDataMessage="No visitors found for the selected date."
-            showPagination={false} // Disable pagination
-            showFilters={false} // Disable filters
-            rowAction={null} // No row actions
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => window.print()}
-            className="no-print" // Add no-print class to exclude this button
-            sx={{
-              marginTop: '1rem',
-            }}
-          >
-            Print
-          </Button>
-        </Box>
-      </Modal>
     </Container>
   );
 };

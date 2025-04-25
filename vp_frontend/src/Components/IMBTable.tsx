@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client';
 import React, { useState, useMemo } from "react";
 import {
   Box,
@@ -184,7 +183,7 @@ const IMBTable: React.FC<IMBTableProps> = ({
         }}
       >
         <Table
-          id="imb-table" // Add ID for export service          
+          id="imb-table" // Add ID for export service
           sx={{
             "& th": {
               backgroundColor: (theme) => theme.palette.secondary.light, // Use theme primary color

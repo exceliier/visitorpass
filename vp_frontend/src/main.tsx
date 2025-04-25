@@ -1,9 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client'; // Import createRoot from react-dom/client
 import App from './App';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import './index.css';
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -15,12 +16,13 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.render(
+// Use createRoot instead of ReactDOM.render
+const root = ReactDOM.createRoot(document.getElementById('root')!); // Ensure the element exists
+root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <App />
     </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );

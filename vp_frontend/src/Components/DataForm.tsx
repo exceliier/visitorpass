@@ -15,7 +15,7 @@ import {
   InputLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 import axiosInstance from '../axiosInstance'; // Import the centralized Axios instance
 
 /**
@@ -55,7 +55,7 @@ import axiosInstance from '../axiosInstance'; // Import the centralized Axios in
  * This component does not accept any props.
  * 
  * ## Dependencies:
- * - `useHistory`: For navigation between pages.
+ * - `useNavigate`: For navigation between pages.
  * - `sessionStorage`: For temporary storage of visitor data.
  * - `fetch`: For API calls to the backend.
  * - `Material-UI`: For UI components such as `Box`, `Container`, `TextField`, `Button`, etc.
@@ -77,7 +77,7 @@ const DataForm: React.FC = () => {
     adhaar: '',
     toVisit: '',
   });
-  const history = useHistory();
+  const navigate = useNavigate(); // Replace useHistory with useNavigate
 
   // Reset form to initial state
   const resetForm = () => {
@@ -203,7 +203,7 @@ const DataForm: React.FC = () => {
           sessionStorage.setItem('visitorData', JSON.stringify(visitorData)); // Save updated visitorData
 
           // Navigate to the barcode page
-          history.push('/barcode');
+          navigate('/barcode'); // Replace history.push with navigate
         } else {
           alert('Failed to save visitor data.');
         }
@@ -214,13 +214,13 @@ const DataForm: React.FC = () => {
     } else {
       // Save visitor data to sessionStorage and navigate to the photo capture page
       sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
-      history.push('/photo');
+      navigate('/photo'); // Replace history.push with navigate
     }
   };
 
   function goHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     event.preventDefault();
-    history.push('/'); // Navigate to the home page
+    navigate('/'); // Replace history.push with navigate
   }
 
   return (

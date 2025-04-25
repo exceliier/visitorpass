@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef, useState, useEffect } from 'react';
 import { Button, Typography, Box, Container } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 import axiosInstance from '../axiosInstance'; // Import axiosInstance
 
 /**
@@ -65,7 +65,7 @@ const PhotoCapture: React.FC = () => {
   const [isPhotoCaptured, setIsPhotoCaptured] = useState(false); // Track if the photo is captured
   const [isClippingEnabled, setIsClippingEnabled] = useState(false); // Track if clipping is enabled
   const [isCanvasVisible, setIsCanvasVisible] = useState(true);
-  const history = useHistory();
+  const navigate = useNavigate(); // Replace useHistory with useNavigate
 
   // Start the camera
   const startCamera = async () => {
@@ -340,7 +340,7 @@ const PhotoCapture: React.FC = () => {
         const { visitorID } = response.data;
         visitorData.barcode = visitorID; // Update the barcode in visitorData
         sessionStorage.setItem('visitorData', JSON.stringify(visitorData)); // Save updated visitorData
-        history.push('/barcode'); // Navigate to BarcodeGenerator
+        navigate('/barcode'); // Navigate to BarcodeGenerator
       } else {
         alert('Failed to save visitor data.');
       }
@@ -378,7 +378,7 @@ const PhotoCapture: React.FC = () => {
       setPhoto(null);
       sessionStorage.removeItem('visitorData'); // Clear visitor data from sessionStorage
       closeCamera();
-      history.push('/pass'); // Navigate back to the home route
+      navigate('/pass'); // Navigate back to the home route
     }
 
     // Redraw the rectangle after resetting the photo

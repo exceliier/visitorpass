@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Replace Switch with Routes
 import PhotoCapture from './Components/PhotoCapture';
 import DataForm from './Components/DataForm';
 import BarcodeGenerator from './Components/BarcodeGenerator';
 import PrintPass from './Components/PrintPass';
 import Login from './Components/Login';
 import HomePage from './Components/HomePage';
+import DailyRegisterPage from './Components/DailyRegisterPage';
 
 import PrivateRoute from './Components/PrivateRoute';
 import { Container, Typography, Box } from '@mui/material';
@@ -44,14 +45,18 @@ const App: React.FC = () => {
           <Typography variant="h5" gutterBottom align="center">
             Visitor Pass Management
           </Typography>
-          <Switch>
-            <Route path="/login" component={Login} />
-            <PrivateRoute exact path="/" component={HomePage} />
-            <PrivateRoute exact path="/pass" component={DataForm} />
-            <PrivateRoute path="/photo" component={PhotoCapture} />
-            <PrivateRoute path="/barcode" component={BarcodeGenerator} />
-            <PrivateRoute path="/print" component={PrintPass} />
-          </Switch>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/pass" element={<DataForm />} />
+              <Route path="/photo" element={<PhotoCapture />} />
+              <Route path="/barcode" element={<BarcodeGenerator />} />
+              <Route path="/print" element={<PrintPass />} />
+              <Route path="/daily-register" element={<DailyRegisterPage />} />
+
+            </Route>
+          </Routes>
         </Container>
       </Box>
     </Router>

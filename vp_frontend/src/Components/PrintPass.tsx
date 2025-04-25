@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Typography, Box, Container } from '@mui/material';
 import Barcode from 'react-barcode';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 
 /**
  * `PrintPass` is a React functional component that renders a printable visitor pass.
@@ -27,7 +27,7 @@ import { useHistory } from 'react-router-dom';
  *
  * @dependencies
  * - `useState` and `useEffect` from React for state management and side effects.
- * - `useHistory` from `react-router-dom` for navigation.
+ * - `useNavigate` from `react-router-dom` for navigation.
  * - `Container`, `Box`, `Typography`, and `Button` from Material-UI for styling.
  * - `Barcode` for rendering the barcode.
  *
@@ -43,7 +43,7 @@ import { useHistory } from 'react-router-dom';
 const PrintPass: React.FC = () => {
   const [visitorData, setVisitorData] = useState<any>(null); // Store visitor data
   const [currentDateTime, setCurrentDateTime] = useState<string>(''); // State for current datetime
-  const history = useHistory();
+  const navigate = useNavigate(); // Replace useHistory with useNavigate
 
   useEffect(() => {
     // Retrieve the visitorData JSON object from sessionStorage
@@ -67,7 +67,7 @@ const PrintPass: React.FC = () => {
   };
 
   const handleNew = () => {
-    history.push('/pass'); // Navigate back to the DataForm page
+    navigate('/pass'); // Replace history.push with navigate
   };
 
   return (

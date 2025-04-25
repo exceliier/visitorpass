@@ -68,6 +68,33 @@ button:focus-visible {
 }
 @media print {
   /* General Reset for Printing */
+  .no-print {
+    display: none !important;
+  }
+  .group-row {
+    page-break-inside: avoid;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  /* Ensure the report title repeats on each page */
+  .print-title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background-color: white;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 0;
+  }
+
+  /* Add consistent space for the fixed title on all pages */
+  .print-table-container {
+    margin-top: 40px; /* Adjust based on the height of the title */
+  }
   body * {
     visibility: hidden;
   }
