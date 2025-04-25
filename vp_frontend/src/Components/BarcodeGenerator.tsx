@@ -63,10 +63,10 @@ const BarcodeGenerator: React.FC = () => {
             }}
           />
         )}
-        <Typography variant="body1">Name: {visitorData?.name}</Typography>
-        <Typography variant="body1">Mobile: {visitorData?.mobile}</Typography>
-        <Typography variant="body1">Adhaar Number: {visitorData?.adhaar}</Typography>
-        <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
+        <Typography variant="body1">नांव : {visitorData?.name}</Typography>
+        <Typography variant="body1">मोबाइल : {visitorData?.mobile}</Typography>
+        <Typography variant="body1">ओळखपत्र क्रमांक : {visitorData?.adhaar}</Typography>
+        <Typography variant="body1">कोणास भेटणार : {visitorData?.toVisit}</Typography>
         <Barcode value={visitorData?.barcode || ''} width={1} height={50} />
         <Box sx={{ mt: 2 }}>
           <Button onClick={() => navigate('/print')} variant="contained" color="primary">

@@ -91,10 +91,10 @@ const PrintPass: React.FC = () => {
           style={{ width: '80px' }}
         />
         <Typography variant="body2" gutterBottom>
-          Sinchan Bhavan, Chhatrapati Sambhajinagar
+          {STATIC_TEXT.ORGANIZATION_NAME}           
         </Typography>
         <Typography variant="h6" gutterBottom>
-          Visitor Pass
+          अभ्यागत प्रवेश परवाना 
         </Typography>
         
         {visitorData?.photo && (
@@ -109,20 +109,19 @@ const PrintPass: React.FC = () => {
             }}
           />
         )}
-        <Typography variant="h6"><strong> Name: {visitorData?.name}</strong></Typography>
-        <Typography variant="body1">Mobile: {visitorData?.mobile}</Typography>
-        <Typography variant="body1">ID Number: {visitorData?.adhaar}</Typography>
-        <Typography variant="body1">To Visit: {visitorData?.toVisit}</Typography>
-        <Typography variant="body1"><strong> Time: {currentDateTime} </strong> </Typography> {/* Display current datetime */}
-        <Typography variant='body2'>
-          Valid upto{' '}
+        <Typography variant="h6"><strong> नांव : {visitorData?.name}</strong></Typography>
+        <Typography variant="body1">मोबाइल : {visitorData?.mobile}</Typography>
+        <Typography variant="body1">ओळखपत्र क्रमांक : {visitorData?.adhaar}</Typography>
+        <Typography variant="body1">कोणास भेटणार : {visitorData?.toVisit}</Typography>
+        <Typography variant="body1"><strong> वेळ : {currentDateTime} </strong> </Typography> {/* Display current datetime */}
+        <Typography variant='body2'>          
           {new Date(
             Math.max(
               new Date(currentDateTime).getTime() + 2 * 60 * 60 * 1000,
               new Date(currentDateTime).setHours(17, 0, 0, 0)
             )
           ).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}{' '}
-          on date of issue
+          पर्यन्त प्रवेश परवाना वैध आहे.
         </Typography>
         <Box
           sx={{
