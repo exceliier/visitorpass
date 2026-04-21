@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL; // Use Vite's environment variable
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''; // Use Vite's environment variable
 
 if (!apiBaseUrl) {
-  throw new Error('API base URL is not defined in environment variables.');
+  console.warn('VITE_API_BASE_URL is not defined. Falling back to same-origin relative API paths.');
 }
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: apiBaseUrl, // Set the base URL for all requests
+  baseURL: apiBaseUrl || undefined, // Use same-origin base path if not configured
   headers: {
     'Content-Type': 'application/json', // Default headers
   },

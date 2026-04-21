@@ -10,12 +10,12 @@ router.post('/login', async (req, res) => {
     console.log('Login attempt:', { username, password });
 
     const user = await User.findOne({ username });
-    console.log('Retrieved Hashed Password:', user.password);
-    console.log('Length of Retrieved Hash:', user.password.length);
     if (!user) {
       console.log('User not found:', username);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+    console.log('Retrieved Hashed Password:', user.password);
+    console.log('Length of Retrieved Hash:', user.password.length);
 
     console.log('User found:', user);
 
