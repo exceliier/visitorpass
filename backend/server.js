@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-const cors = require('cors'); // Import the CORS middleware
+// const cors = require('cors'); // Removed CORS import
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const visitorRoutes = require('./routes/visitors');
@@ -30,7 +30,21 @@ process.on('uncaughtException', (error) => {
 });
 
 // Middleware
-app.use(cors()); // Enable CORS
+// app.use(cors()); // Enable CORS - replaced with manual headers
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  );
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 app.use(express.json({ limit: '10mb' })); // Increase JSON payload limit
 
 // MongoDB connection

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Typography, Box, Container } from '@mui/material';
 import Barcode from 'react-barcode';
 import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
+import { STATIC_TEXT } from '../appconfig';
 
 /**
  * `PrintPass` is a React functional component that renders a printable visitor pass.
@@ -91,12 +92,11 @@ const PrintPass: React.FC = () => {
           style={{ width: '80px' }}
         />
         <Typography variant="body2" gutterBottom>
-          {STATIC_TEXT.ORGANIZATION_NAME}           
+          {STATIC_TEXT.ORGANIZATION_NAME}
         </Typography>
         <Typography variant="h6" gutterBottom>
-          अभ्यागत प्रवेश परवाना 
+          अभ्यागत प्रवेश परवाना
         </Typography>
-        
         {visitorData?.photo && (
           <img
             src={visitorData.photo}
@@ -104,23 +104,35 @@ const PrintPass: React.FC = () => {
             style={{
               width: 'auto',
               height: '120px', // Set a fixed height for the image
-              borderRadius: '8px',              
+              borderRadius: '8px',
               objectFit: 'contain', // Ensures the entire image is visible within the box
             }}
           />
         )}
-        <Typography variant="h6"><strong> नांव : {visitorData?.name}</strong></Typography>
+        <Typography variant="h6">
+          <strong> नांव : {visitorData?.name}</strong>
+        </Typography>
         <Typography variant="body1">मोबाइल : {visitorData?.mobile}</Typography>
-        <Typography variant="body1">ओळखपत्र क्रमांक : {visitorData?.adhaar}</Typography>
-        <Typography variant="body1">कोणास भेटणार : {visitorData?.toVisit}</Typography>
-        <Typography variant="body1"><strong> वेळ : {currentDateTime} </strong> </Typography> {/* Display current datetime */}
-        <Typography variant='body2'>          
+        <Typography variant="body1">
+          ओळखपत्र क्रमांक : {visitorData?.adhaar}
+        </Typography>
+        <Typography variant="body1">
+          कोणास भेटणार : {visitorData?.toVisit}
+        </Typography>
+        <Typography variant="body1">
+          <strong> वेळ : {currentDateTime} </strong>{' '}
+        </Typography>{' '}
+        {/* Display current datetime */}
+        <Typography variant="body2">
           {new Date(
             Math.max(
               new Date(currentDateTime).getTime() + 2 * 60 * 60 * 1000,
-              new Date(currentDateTime).setHours(17, 0, 0, 0)
-            )
-          ).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}{' '}
+              new Date(currentDateTime).setHours(17, 0, 0, 0),
+            ),
+          ).toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}{' '}
           पर्यन्त प्रवेश परवाना वैध आहे.
         </Typography>
         <Box
@@ -140,12 +152,15 @@ const PrintPass: React.FC = () => {
             height={40} // Adjust barcode height
             margin={0} // Remove extra margins
           />
-          
         </Box>
-        
       </Box>
       <Box sx={{ mt: 2, textAlign: 'center' }}>
-        <Button onClick={handlePrint} variant="contained" color="primary" sx={{ mr: 2 }}>
+        <Button
+          onClick={handlePrint}
+          variant="contained"
+          color="primary"
+          sx={{ mr: 2 }}
+        >
           Print
         </Button>
         <Button onClick={handleNew} variant="outlined" color="secondary">
