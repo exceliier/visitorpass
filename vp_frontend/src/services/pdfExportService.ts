@@ -51,7 +51,7 @@ export const exportElementToPDF = (
     .set(options)
     .from(clonedElement.innerHTML)
     .save()
-    .catch((error) => {
+    .catch((error: any) => {
       console.error("Error generating PDF:", error);
     });
 };

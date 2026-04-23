@@ -13,12 +13,15 @@ const getComputedStyles = (element: HTMLElement) => {
     font: {
       name: 'DVOT-Surekh', // Corrected font name
       size: 11, // Set font size to 11
-      bold: styles.fontWeight === 'bold' || parseInt(styles.fontWeight, 10) >= 700,
+      bold:
+        styles.fontWeight === 'bold' || parseInt(styles.fontWeight, 10) >= 700,
       italic: styles.fontStyle === 'italic',
     },
     alignment: {
-      horizontal: styles.textAlign as ExcelJS.Alignment['horizontal'] || 'center',
-      vertical: styles.verticalAlign as ExcelJS.Alignment['vertical'] || 'middle',
+      horizontal:
+        (styles.textAlign as ExcelJS.Alignment['horizontal']) || 'center',
+      vertical:
+        (styles.verticalAlign as ExcelJS.Alignment['vertical']) || 'middle',
       wrapText: false, // Enable text wrapping
     },
     fill: {
@@ -41,7 +44,7 @@ export const exportTableToExcel = async (
   tableId: string,
   fileName: string = 'ExportedTable.xlsx',
   defaultFont: string = 'DVOT-Surekh', // Default font if none is specified
-  title: string = 'Report Title' // Default title
+  title: string = 'Report Title', // Default title
 ) => {
   const table = document.getElementById(tableId);
   if (!table) {
@@ -55,8 +58,10 @@ export const exportTableToExcel = async (
 
   // Add title row
   const firstRow = table.querySelector('tr:first-child');
-  const columnCount = Array.from(firstRow?.children || [])
-    .reduce((count, cell) => count + parseInt(cell.getAttribute('colspan') || '1', 10), 0);
+  const columnCount = Array.from(firstRow?.children || []).reduce(
+    (count, cell) => count + parseInt(cell.getAttribute('colspan') || '1', 10),
+    0,
+  );
   const titleRow = worksheet.addRow([title]);
   titleRow.font = { name: defaultFont, size: 14, bold: true }; // Bold and font size 14
   titleRow.alignment = { horizontal: 'center', vertical: 'middle' }; // Centered alignment
@@ -81,8 +86,8 @@ export const exportTableToExcel = async (
       // Add value to the cell
       const excelCell = worksheet.getCell(rowIndex + 2, colIndex + 1); // Start from row 2 (row 1 is the title)
       if (cell.closest('.no-print')) {
-        excelCell.value = ""      
-      }else{
+        excelCell.value = '';
+      } else {
         excelCell.value = value;
       }
 
@@ -95,7 +100,7 @@ export const exportTableToExcel = async (
         italic: styles.font.italic,
       };
       excelCell.alignment = styles.alignment;
-      excelCell.fill = styles.fill;
+      excelCell.fill = styles.fill as any;
 
       // Override borders
       excelCell.border = {
@@ -111,7 +116,7 @@ export const exportTableToExcel = async (
           rowIndex + 2,
           colIndex + 1,
           rowIndex + rowspan + 1,
-          colIndex + colspan
+          colIndex + colspan,
         );
       }
     });
@@ -120,7 +125,11 @@ export const exportTableToExcel = async (
   // Align table header row to center
   const headerRow = worksheet.getRow(2); // Assuming the first row after the title is the header
   headerRow.eachCell((cell) => {
-    cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+    cell.alignment = {
+      horizontal: 'center',
+      vertical: 'middle',
+      wrapText: true,
+    };
     cell.border = {
       top: { style: 'thin' }, // Horizontal border: hairline
       bottom: { style: 'thin' }, // Horizontal border: hairline

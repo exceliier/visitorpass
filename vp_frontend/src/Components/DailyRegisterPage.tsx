@@ -13,15 +13,17 @@ const DailyRegisterPage: React.FC = () => {
   // Format the selected date to Indian format (DD-MM-YYYY)
   const formatDateToIndian = (date: string): string => {
     if (!date) return 'Invalid Date';
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    };
     return new Intl.DateTimeFormat('en-IN', options).format(new Date(date));
   };
 
-  
-
   return (
-    <Box sx={{ padding: '2rem' }} id="daily-register-page">      
-    <style>
+    <Box sx={{ padding: '2rem' }} id="daily-register-page">
+      <style>
         {`
           @media print {
             #daily-register-page, #daily-register-page * {
@@ -51,6 +53,7 @@ const DailyRegisterPage: React.FC = () => {
             }),
           }))}
           visibleColumns={['name', 'mobile', 'adhaar', 'toVisit', 'date']}
+          totalColumns={[]}
           columnMap={{
             name: 'Name',
             mobile: 'Mobile',
@@ -64,7 +67,7 @@ const DailyRegisterPage: React.FC = () => {
           showFilters={true} // Filters are disabled
           rowAction={null}
         />
-      </div>           
+      </div>
     </Box>
   );
 };

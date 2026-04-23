@@ -7,9 +7,9 @@ import axiosInstance from '../axiosInstance'; // Import axiosInstance
 /**
  * PhotoCapture Component
  *
- * This React functional component provides a user interface for capturing, clipping, 
- * and saving a photo using the device's camera. It includes features such as 
- * starting/stopping the camera, capturing a photo, clipping a specific area of the 
+ * This React functional component provides a user interface for capturing, clipping,
+ * and saving a photo using the device's camera. It includes features such as
+ * starting/stopping the camera, capturing a photo, clipping a specific area of the
  * captured photo, and submitting the photo data to an API.
  *
  * @component
@@ -18,9 +18,9 @@ import axiosInstance from '../axiosInstance'; // Import axiosInstance
  *
  * @remarks
  * - The component uses the `useRef` hook to reference the video and canvas elements.
- * - The `useState` hook is used to manage the state of the photo, clipping area, 
+ * - The `useState` hook is used to manage the state of the photo, clipping area,
  *   and other UI-related states.
- * - The `useEffect` hook is used for cleanup and updating the canvas when the 
+ * - The `useEffect` hook is used for cleanup and updating the canvas when the
  *   clipping area or photo changes.
  *
  * @features
@@ -113,7 +113,9 @@ const PhotoCapture: React.FC = () => {
     setIsPhotoCaptured(true); // Enable photo-related actions
 
     // Retrieve the visitorData JSON object from sessionStorage
-    const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
+    const visitorData = JSON.parse(
+      sessionStorage.getItem('visitorData') || '{}',
+    );
 
     // Update the photo field in visitorData
     visitorData.photo = photoData;
@@ -143,29 +145,38 @@ const PhotoCapture: React.FC = () => {
       clippingArea.clipX,
       clippingArea.clipY,
       clippingArea.clipWidth,
-      clippingArea.clipHeight
+      clippingArea.clipHeight,
     );
   };
 
   // Allow the user to move the rectangle
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const handleMouseDown = (
+    e:
+      | React.MouseEvent<HTMLCanvasElement>
+      | React.TouchEvent<HTMLCanvasElement>,
+  ) => {
     const canvas = canvasRef.current;
     if (!canvas || !photo) return;
-  
+
     const rect = canvas.getBoundingClientRect();
-    const startX = 'touches' in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const startY = 'touches' in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
-  
+    const startX =
+      'touches' in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
+    const startY =
+      'touches' in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
+
     const img = new Image();
     img.src = photo;
-  
+
     img.onload = () => {
       // Calculate the rendered dimensions of the image
       const canvasAspectRatio = canvas.width / canvas.height;
       const imageAspectRatio = img.width / img.height;
-  
-      let renderedWidth, renderedHeight, offsetX, offsetY;
-  
+
+      let renderedWidth: number,
+        renderedHeight: number,
+        offsetX: number,
+        offsetY: number;
+
       if (canvasAspectRatio > imageAspectRatio) {
         // Image is constrained by height
         renderedHeight = canvas.height;
@@ -179,7 +190,7 @@ const PhotoCapture: React.FC = () => {
         offsetX = 0;
         offsetY = (canvas.height - renderedHeight) / 2;
       }
-  
+
       // Check if the touch/mouse is inside the rectangle
       if (
         startX >= clippingArea.clipX &&
@@ -189,7 +200,7 @@ const PhotoCapture: React.FC = () => {
       ) {
         const offsetXFromClip = startX - clippingArea.clipX;
         const offsetYFromClip = startY - clippingArea.clipY;
-  
+
         const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
           const currentX =
             'touches' in moveEvent
@@ -199,28 +210,34 @@ const PhotoCapture: React.FC = () => {
             'touches' in moveEvent
               ? moveEvent.touches[0].clientY - rect.top
               : (moveEvent as MouseEvent).clientY - rect.top;
-  
+
           // Constrain the rectangle to the image's rendered bounds
           setClippingArea((prev) => ({
             ...prev,
             clipX: Math.max(
               offsetX,
-              Math.min(offsetX + renderedWidth - prev.clipWidth, currentX - offsetXFromClip)
+              Math.min(
+                offsetX + renderedWidth - prev.clipWidth,
+                currentX - offsetXFromClip,
+              ),
             ),
             clipY: Math.max(
               offsetY,
-              Math.min(offsetY + renderedHeight - prev.clipHeight, currentY - offsetYFromClip)
+              Math.min(
+                offsetY + renderedHeight - prev.clipHeight,
+                currentY - offsetYFromClip,
+              ),
             ),
           }));
         };
-  
+
         const handleEnd = () => {
           document.removeEventListener('mousemove', handleMove);
           document.removeEventListener('mouseup', handleEnd);
           document.removeEventListener('touchmove', handleMove);
           document.removeEventListener('touchend', handleEnd);
         };
-  
+
         document.addEventListener('mousemove', handleMove);
         document.addEventListener('mouseup', handleEnd);
         document.addEventListener('touchmove', handleMove);
@@ -236,56 +253,62 @@ const PhotoCapture: React.FC = () => {
       console.error('No photo available to clip.');
       return;
     }
-  
+
     setIsClippingEnabled(true); // Enable clipping state
-  
+
     const image = new Image();
     image.src = photo;
-  
+
     image.onload = () => {
       const canvas = document.createElement('canvas');
       const overlayCanvas = canvasRef.current;
-  
+
       if (!overlayCanvas) {
         console.error('Overlay canvas is not available.');
         return;
       }
-  
+
       // Ensure the overlay canvas contains the image
       const overlayContext = overlayCanvas.getContext('2d');
       if (!overlayContext) {
         console.error('Overlay canvas context is not available.');
         return;
       }
-  
+
       // Draw the image onto the overlay canvas if not already drawn
-      overlayContext.drawImage(image, 0, 0, overlayCanvas.width, overlayCanvas.height);
-  
+      overlayContext.drawImage(
+        image,
+        0,
+        0,
+        overlayCanvas.width,
+        overlayCanvas.height,
+      );
+
       // Use the rectangle's dimensions directly
       const clipX = clippingArea.clipX;
       const clipY = clippingArea.clipY;
       const clipWidth = clippingArea.clipWidth;
       const clipHeight = clippingArea.clipHeight;
-  
+
       // Set the canvas dimensions to match the clipping area
       canvas.width = 300; // Desired width for the clipped image
       canvas.height = 400; // Desired height for the clipped image
-  
+
       const context = canvas.getContext('2d');
       if (!context) {
         console.error('Canvas context is not available.');
         return;
       }
-  
+
       // Map the clipping area to the original image dimensions
       const scaleX = image.width / overlayCanvas.width;
       const scaleY = image.height / overlayCanvas.height;
-  
+
       const sourceX = Math.round(clipX * scaleX);
       const sourceY = Math.round(clipY * scaleY);
       const sourceWidth = Math.round(clipWidth * scaleX);
       const sourceHeight = Math.round(clipHeight * scaleY);
-  
+
       // Draw the clipped portion of the image onto the canvas and resize it
       context.drawImage(
         image, // Use the original image as the source
@@ -296,20 +319,22 @@ const PhotoCapture: React.FC = () => {
         0, // Destination X
         0, // Destination Y
         canvas.width, // Destination Width (resized)
-        canvas.height // Destination Height (resized)
+        canvas.height, // Destination Height (resized)
       );
-  
+
       // Convert the resized clipped canvas content to a data URL
       const clippedPhotoData = canvas.toDataURL('image/png');
       console.log('Clipped and resized photo data:', clippedPhotoData);
-  
+
       setPhoto(clippedPhotoData); // Update the photo with the clipped and resized image
-  
+
       // Update visitorData in sessionStorage
-      const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
+      const visitorData = JSON.parse(
+        sessionStorage.getItem('visitorData') || '{}',
+      );
       visitorData.photo = clippedPhotoData;
       sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
-  
+
       // Clear the rectangle from the overlay canvas
       overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height); // Clear the rectangle
       setIsCanvasVisible(false); // Hide the canvas after clipping
@@ -319,23 +344,25 @@ const PhotoCapture: React.FC = () => {
   // Save data and call the API
   const saveAndCallApi = async (isClipped = true) => {
     closeCamera(); // Stop the camera before saving
-    const visitorData = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
-  
+    const visitorData = JSON.parse(
+      sessionStorage.getItem('visitorData') || '{}',
+    );
+
     if (!visitorData.photo) {
       alert('No photo available to save.');
       return;
     }
-  
+
     if (!isClipped) {
       // Save the unmodified photo
       visitorData.photo = photo;
       sessionStorage.setItem('visitorData', JSON.stringify(visitorData));
     }
-  
+
     try {
       // Use axiosInstance to make the API call
       const response = await axiosInstance.post('/visitors', visitorData);
-  
+
       if (response.status === 201) {
         const { visitorID } = response.data;
         visitorData.barcode = visitorID; // Update the barcode in visitorData
@@ -470,9 +497,9 @@ const PhotoCapture: React.FC = () => {
               >
                 Save Without Clipping
               </Button>
-              
+
               <Button
-                onClick={saveAndCallApi}
+                onClick={() => saveAndCallApi()}
                 variant="contained"
                 color="secondary"
                 sx={{ mr: 2 }}
@@ -480,7 +507,11 @@ const PhotoCapture: React.FC = () => {
               >
                 Save and Submit
               </Button>
-              <Button onClick={handleAbort} variant="outlined" color="secondary">
+              <Button
+                onClick={handleAbort}
+                variant="outlined"
+                color="secondary"
+              >
                 Cancel
               </Button>
             </Box>
@@ -490,9 +521,11 @@ const PhotoCapture: React.FC = () => {
             <video
               ref={videoRef}
               autoPlay
+              muted
+              playsInline
               style={{
                 borderRadius: '8px',
-                width: '100%',                
+                width: '100%',
                 height: 'auto',
                 objectFit: 'cover',
               }}
@@ -516,7 +549,11 @@ const PhotoCapture: React.FC = () => {
               >
                 Capture Photo
               </Button>
-              <Button onClick={handleAbort} variant="outlined" color="secondary">
+              <Button
+                onClick={handleAbort}
+                variant="outlined"
+                color="secondary"
+              >
                 Cancel
               </Button>
             </Box>

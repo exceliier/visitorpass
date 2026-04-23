@@ -18,7 +18,7 @@ export default defineConfig({
     rollupOptions: {
       onwarn(warning, warn) {
         // Suppress 'use client' warnings
-        if (warning.message.includes("'use client' was ignored")) {
+        if (warning.message.includes("'use client'")) {
           return;
         }
         warn(warning);

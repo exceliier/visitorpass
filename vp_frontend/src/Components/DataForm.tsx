@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   FormControl,
   InputLabel,
 } from '@mui/material';
@@ -143,7 +144,7 @@ const DataForm: React.FC = () => {
     return adhaarRegex.test(value) || panRegex.test(value);
   };
 
-  const handleToVisitChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleToVisitChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value as string;
     setToVisit(value);
     if (value !== 'Other') {
@@ -152,13 +153,17 @@ const DataForm: React.FC = () => {
   };
 
   const handlePhotoOrBarcode = async () => {
-    const isValidDrivingLicense = (value: string) => /^[A-Z]{2}\d{2} \d{11}$/.test(value); // Format: Two letters, two digits, space, 11 digits
+    const isValidDrivingLicense = (value: string) =>
+      /^[A-Z]{2}\d{2} \d{11}$/.test(value); // Format: Two letters, two digits, space, 11 digits
     const isValidPassport = (value: string) => /^[A-Z]{1}[0-9]{7}$/.test(value); // Format: One letter followed by 7 digits
-    const isValidElectorsID = (value: string) => /^[A-Z]{3}[0-9]{7}$/.test(value); // Format: Three letters followed by 7 digits
+    const isValidElectorsID = (value: string) =>
+      /^[A-Z]{3}[0-9]{7}$/.test(value); // Format: Three letters followed by 7 digits
 
     const newErrors = {
       name: name.length < 5 ? 'Name must be at least 5 characters long.' : '',
-      mobile: !/^\d{10}$/.test(mobile) ? 'Mobile number must be exactly 10 digits.' : '',
+      mobile: !/^\d{10}$/.test(mobile)
+        ? 'Mobile number must be exactly 10 digits.'
+        : '',
       adhaar: !(
         isValidAdhaarOrPAN(adhaar) ||
         isValidDrivingLicense(adhaar) ||
@@ -167,9 +172,11 @@ const DataForm: React.FC = () => {
       )
         ? 'Enter a valid Adhaar (12 digits), PAN (ABCDE1234F), Driving License (e.g., KA01 12345678901), Passport (A1234567), or Electors ID (e.g., ABC1234567).'
         : '',
-      toVisit: toVisit.trim() === '' || (toVisit === 'Other' && otherToVisit.trim() === '')
-        ? 'Please specify whom to visit.'
-        : '',
+      toVisit:
+        toVisit.trim() === '' ||
+        (toVisit === 'Other' && otherToVisit.trim() === '')
+          ? 'Please specify whom to visit.'
+          : '',
     };
 
     setErrors(newErrors);
@@ -218,7 +225,9 @@ const DataForm: React.FC = () => {
     }
   };
 
-  function goHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  function goHome(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ): void {
     event.preventDefault();
     navigate('/'); // Replace history.push with navigate
   }
@@ -260,7 +269,10 @@ const DataForm: React.FC = () => {
                 error={!!errors.mobile}
                 helperText={errors.mobile}
               />
-              <IconButton onClick={() => handleSearch('mobile')} color="primary">
+              <IconButton
+                onClick={() => handleSearch('mobile')}
+                color="primary"
+              >
                 <SearchIcon />
               </IconButton>
             </Box>
@@ -275,21 +287,36 @@ const DataForm: React.FC = () => {
                 error={!!errors.adhaar}
                 helperText={errors.adhaar}
               />
-              <IconButton onClick={() => handleSearch('adhaar')} color="primary">
+              <IconButton
+                onClick={() => handleSearch('adhaar')}
+                color="primary"
+              >
                 <SearchIcon />
               </IconButton>
             </Box>
-            <FormControl variant='outlined' fullWidth margin="normal" required error={!!errors.toVisit}>
-            <InputLabel id="to-visit-label">To Whom to Visit</InputLabel>
+            <FormControl
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              required
+              error={!!errors.toVisit}
+            >
+              <InputLabel id="to-visit-label">To Whom to Visit</InputLabel>
               <Select
                 labelId="to-visit-label" // Link the InputLabel to the Select
                 id="to-visit" // Add an id for the Select
                 value={toVisit}
                 onChange={handleToVisitChange}
               >
-                <MenuItem value="GMIDC Technical-section">GMIDC Technical</MenuItem>
-                <MenuItem value="GMIDC Accounts-section">GMIDC Accounts</MenuItem>
-                <MenuItem value="GMIDC Dakshata-court-section">GMIDC Dakshata-court</MenuItem>
+                <MenuItem value="GMIDC Technical-section">
+                  GMIDC Technical
+                </MenuItem>
+                <MenuItem value="GMIDC Accounts-section">
+                  GMIDC Accounts
+                </MenuItem>
+                <MenuItem value="GMIDC Dakshata-court-section">
+                  GMIDC Dakshata-court
+                </MenuItem>
                 <MenuItem value="GMIDC-Ex Dir">GMIDC-ED</MenuItem>
                 <MenuItem value="GMIDC-Sup Engr">GMIDC-SE</MenuItem>
                 <MenuItem value="GMIDC-EE/DySE">GMIDC-EE</MenuItem>
@@ -302,7 +329,9 @@ const DataForm: React.FC = () => {
                 <MenuItem value="MID-1">MI Divisoin No-1</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
-              {errors.toVisit && <Typography color="error">{errors.toVisit}</Typography>}
+              {errors.toVisit && (
+                <Typography color="error">{errors.toVisit}</Typography>
+              )}
             </FormControl>
             {toVisit === 'Other' && (
               <TextField
@@ -314,8 +343,13 @@ const DataForm: React.FC = () => {
                 required
               />
             )}
-            <Button type="button" variant="outlined" color="secondary" onClick={goHome}           
-            style={{ marginRight: '30px' }}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="secondary"
+              onClick={goHome}
+              style={{ marginRight: '30px' }}
+            >
               HOME
             </Button>
             <FormControlLabel
@@ -337,7 +371,12 @@ const DataForm: React.FC = () => {
             >
               {useOldPhoto ? 'Barcode' : 'Photo'}
             </Button>
-            <Button type="button" variant="outlined" color="secondary" onClick={resetForm}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="secondary"
+              onClick={resetForm}
+            >
               Reset
             </Button>
           </form>

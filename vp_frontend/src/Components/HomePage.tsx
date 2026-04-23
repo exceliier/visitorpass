@@ -9,10 +9,9 @@ const HomePage: React.FC = () => {
   const [visitorData, setVisitorData] = useState<any[]>([]); // State for fetched visitor data
   const navigate = useNavigate(); // Initialize navigate
 
-
   const handlePass = () => {
     navigate('/pass'); // Navigate to the DataForm component
-  }
+  };
   // Handle printing the daily register
   const handlePrintDailyRegister = async () => {
     if (!selectedDate) {
@@ -42,14 +41,21 @@ const HomePage: React.FC = () => {
     <Container maxWidth="sm" sx={{ textAlign: 'center', marginTop: '2rem' }}>
       {/* Date input and button for printing daily register */}
       <Button
-          variant="contained"
-          color="secondary"
-          onClick={handlePass} // Navigate to the DataForm component
-          gap="5rem"
-        >
-          Visitor Passes
-        </Button>
-      <Box sx={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+        variant="contained"
+        color="secondary"
+        onClick={handlePass} // Navigate to the DataForm component
+      >
+        Visitor Passes
+      </Button>
+      <Box
+        sx={{
+          marginBottom: '2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '1rem',
+        }}
+      >
         <TextField
           type="date"
           value={selectedDate}
