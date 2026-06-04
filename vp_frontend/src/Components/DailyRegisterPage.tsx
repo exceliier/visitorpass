@@ -21,6 +21,17 @@ const DailyRegisterPage: React.FC = () => {
     return new Intl.DateTimeFormat('en-IN', options).format(new Date(date));
   };
 
+  const handlePrintPass = (rowData: any) => {
+    // Find the original visitor data from visitorData array using barcode as unique identifier
+    const originalVisitor = visitorData.find(
+      (visitor: any) => visitor.barcode === rowData.barcode,
+    );
+    // Store the original visitor data in sessionStorage
+    sessionStorage.setItem('visitorData', JSON.stringify(originalVisitor));
+    // Navigate to the print pass page
+    navigate('/print');
+  };
+
   return (
     <Box sx={{ padding: '2rem' }} id="daily-register-page">
       <style>
@@ -65,7 +76,7 @@ const DailyRegisterPage: React.FC = () => {
           noDataMessage="No visitors found for the selected date."
           showPagination={false} // Pagination is disabled
           showFilters={true} // Filters are disabled
-          rowAction={null}
+          rowAction={{ label: 'Print Pass', onClick: handlePrintPass }}
         />
       </div>
     </Box>

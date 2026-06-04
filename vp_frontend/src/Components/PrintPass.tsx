@@ -51,15 +51,15 @@ const PrintPass: React.FC = () => {
     const data = JSON.parse(sessionStorage.getItem('visitorData') || '{}');
     setVisitorData(data);
 
-    // Generate and set the current datetime in dd/MMM/yyyy format
-    const now = new Date();
+    // Use visitor's date if available, otherwise current datetime
+    const dateToUse = data.date ? new Date(data.date) : new Date();
     const formattedDate = new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    }).format(now);
+    }).format(dateToUse);
     setCurrentDateTime(formattedDate);
   }, []);
 
@@ -68,7 +68,11 @@ const PrintPass: React.FC = () => {
   };
 
   const handleNew = () => {
-    navigate('/pass'); // Replace history.push with navigate
+    navigate('/pass'); // Navigate to new visitor form
+  };
+
+  const handleBack = () => {
+    navigate(-1); // Go back to previous screen
   };
 
   return (
@@ -163,8 +167,16 @@ const PrintPass: React.FC = () => {
         >
           Print
         </Button>
-        <Button onClick={handleNew} variant="outlined" color="secondary">
+        <Button
+          onClick={handleNew}
+          variant="outlined"
+          color="secondary"
+          sx={{ mr: 2 }}
+        >
           New Visitor
+        </Button>
+        <Button onClick={handleBack} variant="outlined" color="secondary">
+          Back
         </Button>
       </Box>
     </Container>
