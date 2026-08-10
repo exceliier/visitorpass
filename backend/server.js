@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const visitorRoutes = require('./routes/visitors');
+const settingsRoutes = require('./routes/settings');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 console.log('Backend startup info:', {
@@ -71,6 +72,7 @@ mongoose
 // Routes
 app.use('/auth', authRoutes);
 app.use('/visitors', visitorRoutes);
+app.use('/settings', settingsRoutes);
 
 // Start the HTTP server (IIS will handle SSL termination)
 app.listen(PORT, '0.0.0.0', () => {

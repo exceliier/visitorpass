@@ -119,7 +119,12 @@ button:focus-visible {
     background-color: #ffffff;
     box-sizing: border-box;
     overflow: hidden;
+    font-family: 'DVOT-Surekh', 'DVOT Surekh', 'Nirmala UI', 'Mangal', sans-serif !important;
     page: printable-pass; /* Apply the A6 page size */
+  }
+
+  #printable-pass * {
+    font-family: 'DVOT-Surekh', 'DVOT Surekh', 'Nirmala UI', 'Mangal', sans-serif !important;
   }
 
   /* Modal Printing (A4) */

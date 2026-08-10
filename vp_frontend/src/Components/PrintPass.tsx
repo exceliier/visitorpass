@@ -4,6 +4,7 @@ import { Button, Typography, Box, Container } from '@mui/material';
 import Barcode from 'react-barcode';
 import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 import { STATIC_TEXT } from '../appconfig';
+import { useSettings } from '../context/SettingsContext';
 
 /**
  * `PrintPass` is a React functional component that renders a printable visitor pass.
@@ -42,8 +43,10 @@ import { STATIC_TEXT } from '../appconfig';
  * - `handleNew`: Navigates back to the data entry form.
  */
 const PrintPass: React.FC = () => {
+  const { settings } = useSettings();
   const [visitorData, setVisitorData] = useState<any>(null); // Store visitor data
   const [currentDateTime, setCurrentDateTime] = useState<string>(''); // State for current datetime
+  const [rawEntryDate, setRawEntryDate] = useState<Date>(new Date());
   const navigate = useNavigate(); // Replace useHistory with useNavigate
 
   useEffect(() => {
@@ -53,6 +56,7 @@ const PrintPass: React.FC = () => {
 
     // Use visitor's date if available, otherwise current datetime
     const dateToUse = data.date ? new Date(data.date) : new Date();
+    setRawEntryDate(dateToUse);
     const formattedDate = new Intl.DateTimeFormat('en-GB', {
       day: '2-digit',
       month: 'short',
@@ -62,6 +66,27 @@ const PrintPass: React.FC = () => {
     }).format(dateToUse);
     setCurrentDateTime(formattedDate);
   }, []);
+
+  const getExpiryTimeString = () => {
+    if (!rawEntryDate || isNaN(rawEntryDate.getTime())) return '';
+    const validityHours = settings?.validityHours || 2;
+    const timeBasedExpiry = new Date(rawEntryDate.getTime() + validityHours * 60 * 60 * 1000);
+
+    const [cutoffHour, cutoffMinute] = (settings?.cutoffTime || '17:00')
+      .split(':')
+      .map(Number);
+
+    const cutoffDate = new Date(rawEntryDate);
+    cutoffDate.setHours(cutoffHour || 17, cutoffMinute || 0, 0, 0);
+
+    const finalExpiryTime = new Date(
+      Math.max(timeBasedExpiry.getTime(), cutoffDate.getTime())
+    );
+    return finalExpiryTime.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   const handlePrint = () => {
     window.print();
@@ -88,18 +113,22 @@ const PrintPass: React.FC = () => {
           height: '140mm', // Match A6 height
           boxSizing: 'border-box',
           margin: 'auto',
+          fontFamily: settings?.fontFamily || "'DVOT-Surekh', 'DVOT Surekh', 'Nirmala UI', 'Mangal', sans-serif",
+          '& *': {
+            fontFamily: 'inherit !important',
+          },
         }}
       >
         <img
-          src="/logo.png" // Replace with your logo path
+          src={settings?.logoUrl || '/logo.png'}
           alt="Logo"
-          style={{ width: '80px' }}
+          style={{ width: '80px', maxHeight: '60px', objectFit: 'contain' }}
         />
         <Typography variant="body2" gutterBottom>
-          {STATIC_TEXT.ORGANIZATION_NAME}
+          {settings?.organizationName || STATIC_TEXT.ORGANIZATION_NAME}
         </Typography>
         <Typography variant="h6" gutterBottom>
-          अभ्यागत प्रवेश परवाना
+          {settings?.passTitle || 'अभ्यागत प्रवेश परवाना'}
         </Typography>
         {visitorData?.photo && (
           <img
@@ -128,16 +157,7 @@ const PrintPass: React.FC = () => {
         </Typography>{' '}
         {/* Display current datetime */}
         <Typography variant="body2">
-          {new Date(
-            Math.max(
-              new Date(currentDateTime).getTime() + 2 * 60 * 60 * 1000,
-              new Date(currentDateTime).setHours(17, 0, 0, 0),
-            ),
-          ).toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}{' '}
-          पर्यन्त प्रवेश परवाना वैध आहे.
+          {getExpiryTimeString()} {settings?.footerNotice || 'पर्यन्त प्रवेश परवाना वैध आहे.'}
         </Typography>
         <Box
           sx={{

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button, TextField, Box, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import SettingsIcon from '@mui/icons-material/Settings';
 import axiosInstance from '../axiosInstance'; // Use the axiosInstance
 
 const HomePage: React.FC = () => {
@@ -11,6 +12,10 @@ const HomePage: React.FC = () => {
 
   const handlePass = () => {
     navigate('/pass'); // Navigate to the DataForm component
+  };
+
+  const handleSettings = () => {
+    navigate('/settings'); // Navigate to the Settings component
   };
   // Handle printing the daily register
   const handlePrintDailyRegister = async () => {
@@ -39,14 +44,23 @@ const HomePage: React.FC = () => {
 
   return (
     <Container maxWidth="sm" sx={{ textAlign: 'center', marginTop: '2rem' }}>
-      {/* Date input and button for printing daily register */}
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handlePass} // Navigate to the DataForm component
-      >
-        Visitor Passes
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: '1rem', mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePass} // Navigate to the DataForm component
+        >
+          Visitor Passes
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<SettingsIcon />}
+          onClick={handleSettings}
+        >
+          Settings
+        </Button>
+      </Box>
       <Box
         sx={{
           marginBottom: '2rem',

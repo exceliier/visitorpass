@@ -18,6 +18,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom'; // Replace useHistory with useNavigate
 import axiosInstance from '../axiosInstance'; // Import the centralized Axios instance
+import { useSettings } from '../context/SettingsContext';
 
 /**
  * The `DataForm` component is a React functional component that provides a form for entering and managing visitor data.
@@ -65,6 +66,7 @@ import axiosInstance from '../axiosInstance'; // Import the centralized Axios in
  * Render the `DataForm` component to allow users to input and manage visitor data in a visitor management system.
  */
 const DataForm: React.FC = () => {
+  const { settings } = useSettings();
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [adhaar, setAdhaar] = useState('');
@@ -308,26 +310,14 @@ const DataForm: React.FC = () => {
                 value={toVisit}
                 onChange={handleToVisitChange}
               >
-                <MenuItem value="GMIDC Technical-section">
-                  GMIDC Technical
-                </MenuItem>
-                <MenuItem value="GMIDC Accounts-section">
-                  GMIDC Accounts
-                </MenuItem>
-                <MenuItem value="GMIDC Dakshata-court-section">
-                  GMIDC Dakshata-court
-                </MenuItem>
-                <MenuItem value="GMIDC-Ex Dir">GMIDC-ED</MenuItem>
-                <MenuItem value="GMIDC-Sup Engr">GMIDC-SE</MenuItem>
-                <MenuItem value="GMIDC-EE/DySE">GMIDC-EE</MenuItem>
-                <MenuItem value="CEWRD-Techincal">CEWRD-Techincal</MenuItem>
-                <MenuItem value="CEWRD-Corr. Branch">CEWRD-CB</MenuItem>
-                <MenuItem value="CEWRD-Chief Engr">CEWRD-CE</MenuItem>
-                <MenuItem value="CEWRD-Ex Engr">CEWRD-PA</MenuItem>
-                <MenuItem value="QCC">Qquality Control Circle</MenuItem>
-                <MenuItem value="AID">Aurangabad Irrigation Division</MenuItem>
-                <MenuItem value="MID-1">MI Divisoin No-1</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
+                {(settings?.offices || []).map((officeItem: string) => (
+                  <MenuItem key={officeItem} value={officeItem}>
+                    {officeItem}
+                  </MenuItem>
+                ))}
+                {!settings?.offices?.includes('Other') && (
+                  <MenuItem value="Other">Other</MenuItem>
+                )}
               </Select>
               {errors.toVisit && (
                 <Typography color="error">{errors.toVisit}</Typography>
