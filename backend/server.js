@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const visitorRoutes = require('./routes/visitors');
 const settingsRoutes = require('./routes/settings');
+const adminRoutes = require('./routes/admin');
+const migrateMultiOffice = require('./migrations/migrateMultiOffice');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 console.log('Backend startup info:', {
@@ -47,6 +49,7 @@ app.use((req, res, next) => {
   }
 });
 app.use(express.json({ limit: '10mb' })); // Increase JSON payload limit
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
 // MongoDB connection
 const mongoUri =
@@ -66,13 +69,17 @@ mongoose.connection.on('disconnected', () =>
 
 mongoose
   .connect(mongoUri)
-  .then(() => console.log('Connected to MongoDB'))
+  .then(() => {
+    console.log('Connected to MongoDB');
+    migrateMultiOffice();
+  })
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
 app.use('/auth', authRoutes);
 app.use('/visitors', visitorRoutes);
 app.use('/settings', settingsRoutes);
+app.use('/admin', adminRoutes);
 
 // Start the HTTP server (IIS will handle SSL termination)
 app.listen(PORT, '0.0.0.0', () => {

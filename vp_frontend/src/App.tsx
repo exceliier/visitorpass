@@ -8,7 +8,9 @@ import Login from './Components/Login';
 import HomePage from './Components/HomePage';
 import DailyRegisterPage from './Components/DailyRegisterPage';
 import SettingsPage from './Components/SettingsPage';
+import AdminDashboard from './Components/AdminDashboard';
 import PrivateRoute from './Components/PrivateRoute';
+import AdminRoute from './Components/AdminRoute';
 import { Container, Typography, Box } from '@mui/material';
 import { SettingsProvider, useSettings } from './context/SettingsContext';
 
@@ -30,9 +32,10 @@ const AppContent: React.FC = () => {
         alignItems: 'center',
         minHeight: '100vh',
         backgroundColor: '#f9f9f9',
+        py: 2,
       }}
     >
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <AppHeader />
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -43,7 +46,12 @@ const AppContent: React.FC = () => {
             <Route path="/barcode" element={<BarcodeGenerator />} />
             <Route path="/print" element={<PrintPass />} />
             <Route path="/daily-register" element={<DailyRegisterPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+
+            {/* Restricted Admin-Only Routes */}
+            <Route element={<AdminRoute />}>
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
           </Route>
         </Routes>
       </Container>

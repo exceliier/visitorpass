@@ -2,6 +2,8 @@ import axiosInstance from '../axiosInstance';
 
 export interface AppSettings {
   _id?: string;
+  officeId?: string;
+  officeName?: string;
   organizationName: string;
   appTitle: string;
   passTitle: string;
@@ -14,6 +16,8 @@ export interface AppSettings {
 }
 
 export const defaultSettings: AppSettings = {
+  officeId: 'DEFAULT_OFFICE',
+  officeName: 'Main Office',
   organizationName: 'सिंचन भवन, छत्रपती संभाजीनगर',
   appTitle: 'Visitor Pass Management',
   passTitle: 'अभ्यागत प्रवेश परवाना',
