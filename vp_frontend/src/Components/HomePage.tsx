@@ -52,14 +52,14 @@ const HomePage: React.FC = () => {
         >
           Visitor Passes
         </Button>
-        <Button
+        {/* <Button
           variant="outlined"
           color="primary"
           startIcon={<SettingsIcon />}
           onClick={handleSettings}
         >
           Settings
-        </Button>
+        </Button> */}
       </Box>
       <Box
         sx={{
