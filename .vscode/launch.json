@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend Node Server",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "program": "${workspaceFolder}/backend/server.js",
+      "restart": true,
+      "console": "integratedTerminal",
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "5000"
+      }
+    },
+    {
+      "name": "Frontend Vite App",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/vp_frontend/src",
+      "preLaunchTask": "Start Frontend Dev Server",
+      "postDebugTask": "Stop Frontend Dev Server"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Fullstack (Backend + Frontend)",
+      "configurations": [
+        "Backend Node Server",
+        "Frontend Vite App"
+      ],
+      "stopAll": true,
+      "postDebugTask": "Stop All Dev Servers"
+    }
+  ]
+}

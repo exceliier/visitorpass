@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''; // Use Vite's environment variable
+let apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''; // Use Vite's environment variable
+
+// Dynamically adjust localhost/127.0.0.1 API urls when the app is accessed via a LAN IP
+if (apiBaseUrl && (apiBaseUrl.includes('127.0.0.1') || apiBaseUrl.includes('localhost'))) {
+  const currentHost = window.location.hostname;
+  apiBaseUrl = apiBaseUrl.replace('127.0.0.1', currentHost).replace('localhost', currentHost);
+}
 
 if (!apiBaseUrl) {
   console.warn('VITE_API_BASE_URL is not defined. Falling back to same-origin relative API paths.');
